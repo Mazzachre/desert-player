@@ -1,0 +1,11 @@
+Source: desert-player
+Section: misc
+Priority: optional
+Maintainer: Tanya Mai Randstoft <tanya.prinzess@live.dk>
+Build-Depends: debhelper (>= 9), cmake, qtbase5-dev, libqt5quick5, libqt5qml5, libqt5gui5, libqt5quickcontrols2-5, libqt5widgets5, libqt5sql5, libqt5network5, libqt5x11extras5, libx11-dev, libmpv-dev, libavformat-dev, libavcodec-dev, libavutil-dev
+Standards-Version: 3.9.5
+
+Package: desert-player
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqt5quick5 (>= 5.12.8), libqt5qml5 (>= 5.12.8), libqt5gui5 (>= 5.12.8), libqt5quickcontrols2-5 (>= 5.12.8), libqt5widgets5 (>= 5.12.8), libqt5sql5 (>= 5.12.8), libqt5network5 (>= 5.12.8), libqt5x11extras5 (>= 5.12.8), libx11-6, libmpv1, libavformat58, libavcodec58, libavutil56
+Description: Media player for people who like their preferences saved.
