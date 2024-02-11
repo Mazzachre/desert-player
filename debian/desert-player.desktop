@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Desert player
+Comment=Desert media player
+Exec=desert-player
+Icon=desert-player
+Terminal=false
+Categories=AudioVideo;Player;

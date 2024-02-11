@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(desert_player)
+project(desert-player)
 
 set(QT_MIN_VERSION "5.12.0")
 
@@ -19,9 +19,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 
-add_executable(desert_player)
+add_executable(desert-player)
 
-target_sources(desert_player
+target_sources(desert-player
 	PRIVATE
 	src/main.cpp
 	src/app/app.cpp
@@ -44,7 +44,7 @@ target_sources(desert_player
 	src/resources.qrc
 )
 
-target_link_libraries(desert_player
+target_link_libraries(desert-player
 	Qt5::Quick
 	Qt5::Qml
 	Qt5::Gui
@@ -60,7 +60,18 @@ target_link_libraries(desert_player
 	avutil
 )
 
-install(TARGETS desert_player RUNTIME DESTINATION bin)
-message("Installing target: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/desert_player to ${CMAKE_INSTALL_PREFIX}/bin")
+# Install binary
+install(TARGETS desert-player RUNTIME DESTINATION bin)
+message("Installing target: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/desert-player to ${CMAKE_INSTALL_PREFIX}/bin")
+
+# Install the .desktop file
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/debian/desert-player.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+
+# Install the icons
+set(ICON_SIZES 16x16 32x32 48x48 64x64 128x128 256x256)
+foreach(SIZE ${ICON_SIZES})
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/debian/icons/${SIZE}/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/${SIZE}/apps
+            FILES_MATCHING PATTERN "*.png")
+endforeach()
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
