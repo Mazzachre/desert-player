@@ -91,10 +91,10 @@ bool dp::ui::WindowController::eventFilter(QObject* watched, QEvent* event) {
 				Q_EMIT playerTogglePause();
 			}
 			if (keyEvent->key() == Qt::Key_Right) {
-				Q_EMIT playerSeek(10);
+				Q_EMIT playerSeek(5);
 			}
 			if (keyEvent->key() == Qt::Key_Left) {
-				Q_EMIT playerSeek(-10);
+				Q_EMIT playerSeek(-5);
 			}
 		}
 	}

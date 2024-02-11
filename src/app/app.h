@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include "../ui/keep_alive.h"
 
 namespace dp {
 namespace app {
@@ -17,6 +18,7 @@ public:
 
 private:
 	QQmlApplicationEngine *m_engine;
+	dp::ui::KeepAlive *m_keepAlive;
 
 	void registerQmlTypes();
 	void connectSignals();

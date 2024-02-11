@@ -40,6 +40,7 @@ target_sources(desert_player
 	src/player/video_list.cpp
 	src/player/subtitle_list.cpp
 	src/ui/window_controller.cpp
+	src/ui/keep_alive.cpp
 	src/resources.qrc
 )
 

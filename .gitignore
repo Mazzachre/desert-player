@@ -9,3 +9,9 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+build/
+debian/.debhelper/
+debian/desert-player.debhelper.log
+debian/desert-player.substvars
+debian/desert-player/
+obj-x86_64-linux-gnu/

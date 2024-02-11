@@ -26,6 +26,7 @@ Rectangle {
 	Column {
 		anchors.fill: parent
 
+		//setup better color comtrast
 		Slider {
 			id: position
 			from: 0

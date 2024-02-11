@@ -1,9 +1,7 @@
+#include "mpv_controller.h"
 #include <QDebug>
 #include <QVariant>
-
 #include <clocale>
-
-#include "mpv_controller.h"
 
 struct node_autofree {
 	mpv_node *ptr;
@@ -161,6 +159,8 @@ dp::player::MpvController::MpvController(bool verbose, QObject *parent): QObject
 		qFatal("could not initialize mpv context");
 	}
 	mpv_set_wakeup_callback(m_mpv, MpvController::mpvEvents, this);
+	mpv_set_option_string(m_mpv, "input-default-bindings", "no");
+	mpv_set_option_string(m_mpv, "input-vo-keyboard", "no");
 
 	if (verbose) {
 		mpv_set_option_string(m_mpv, "terminal", "yes");

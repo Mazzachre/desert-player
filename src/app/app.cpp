@@ -18,7 +18,8 @@
 
 dp::app::App::App(int &argc, char **argv)
 	: QApplication(argc, argv)
-	, m_engine{new QQmlApplicationEngine} {
+	, m_engine{new QQmlApplicationEngine}
+	, m_keepAlive{new dp::ui::KeepAlive(this)} {
 	QCommandLineParser parser;
 	parser.addOptions({
 		{{"V", "Verbose"}, "Verbose terminal logging"}
@@ -61,10 +62,17 @@ void dp::app::App::connectSignals() {
 	dp::player::MpvPlayer* player = rootObject->findChild<dp::player::MpvPlayer*>("player");
 	if (!player) qFatal("Unable to find player");
 
+	connect(player, &dp::player::MpvPlayer::positionChanged, m_keepAlive, &dp::ui::KeepAlive::moviePlaying);
+
 	//Playlist to data
 	connect(dp::library::Playlists::instance(), &dp::library::Playlists::playlistSelected, dp::data::Data::instance(), &dp::data::Data::playlistSelected);
 	connect(dp::data::Data::instance(), &dp::data::Data::playlistsUpdated, dp::library::Playlists::instance(), &dp::library::Playlists::setPlaylists);
 	connect(dp::data::Data::instance(), &dp::data::Data::fileListUpdated, dp::library::FileList::instance(), &dp::library::FileList::setFileList);
+
+	//UI to player
+	connect(dp::ui::WindowController::instance(), &dp::ui::WindowController::playerTogglePause, player, &dp::player::MpvPlayer::togglePause);
+	connect(dp::ui::WindowController::instance(), &dp::ui::WindowController::playerToggleSubtitles, player, &dp::player::MpvPlayer::toggleSubtitles);
+	connect(dp::ui::WindowController::instance(), &dp::ui::WindowController::playerSeek, player, &dp::player::MpvPlayer::seekPosition);
 
 	//Player to video list
 	connect(player, &dp::player::MpvPlayer::videoTracksLoaded, dp::player::VideoList::instance(), &dp::player::VideoList::setTracks);

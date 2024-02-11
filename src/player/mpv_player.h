@@ -42,6 +42,8 @@ public:
 	Q_SIGNAL void subtitleTrackRemoved(const QVariant& subtitle) const;
 	Q_SIGNAL void subtitleTrackChanged(const QVariant& subtitle) const;
 
+	//SecondarySubtitle
+
 	Q_SLOT void playMovie(const QMap<QString, QVariant>& args);
 	Q_SLOT void playFile(const File& file);
 	Q_SLOT void stopMovie() const;
