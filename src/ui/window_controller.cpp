@@ -21,8 +21,8 @@ void dp::ui::WindowController::init(QObject *parent) {
 
 void dp::ui::WindowController::init(QQuickWindow* window, QRect screenSize) {
 	m_window = window;
-	m_window->resize(screenSize.width() / 2, screenSize.height() / 2);	
-	m_window->installEventFilter(this);	
+	m_window->resize(screenSize.width() / 2, screenSize.height() / 2);
+	m_window->installEventFilter(this);
 }
 
 void dp::ui::WindowController::hideControls() {
@@ -74,16 +74,16 @@ dp::ui::WindowController::State dp::ui::WindowController::currentState() {
 }
 
 bool dp::ui::WindowController::eventFilter(QObject* watched, QEvent* event) {
-	if (m_state == Player && event->type() == QEvent::MouseMove) {
-		m_controlsTimer->start(5000);
-		if (!m_controlsVisible) {
-			m_controlsVisible = true;
-			Q_EMIT controlsVisisbleChanged();
+	if (m_state == Player) {
+		if (event->type() == QEvent::MouseMove) {
+			m_controlsTimer->start(5000);
+			if (!m_controlsVisible) {
+				m_controlsVisible = true;
+				Q_EMIT controlsVisisbleChanged();
+			}
 		}
-	}
-	if (event->type() == QEvent::KeyPress) {
-		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-		if (m_state == Player) {
+		if (event->type() == QEvent::KeyPress) {
+			QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
 			if (keyEvent->key() == Qt::Key_S) {
 				Q_EMIT playerToggleSubtitles();
 			}
@@ -96,6 +96,8 @@ bool dp::ui::WindowController::eventFilter(QObject* watched, QEvent* event) {
 			if (keyEvent->key() == Qt::Key_Left) {
 				Q_EMIT playerSeek(-5);
 			}
+			event->accept();
+			return true;
 		}
 	}
 	return QObject::eventFilter(watched, event);

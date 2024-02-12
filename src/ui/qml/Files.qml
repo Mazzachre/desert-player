@@ -36,6 +36,7 @@ ListView {
 					pointSize: 12
 				}
 				onClicked: FileList.showDetails(path);
+				focusPolicy: Qt.NoFocus
 			}
 
 			Text {
@@ -82,6 +83,7 @@ ListView {
 					pointSize: 12
 				}
 				onClicked: PlaylistController.removeFile(path)
+				focusPolicy: Qt.NoFocus
 			}
 		}
 	}

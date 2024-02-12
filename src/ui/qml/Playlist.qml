@@ -55,6 +55,7 @@ Item {
 					bold: true					
 				}
 				onClicked: PlaylistController.addPlaylist()
+				focusPolicy: Qt.NoFocus
 			}		
 		}
 
@@ -104,6 +105,7 @@ Item {
 							//TODO We need a way to edit the effin names!
 
 						}
+						focusPolicy: Qt.NoFocus
 					}
 
 					Text {
@@ -128,6 +130,7 @@ Item {
 							pointSize: 12
 						}
 						onClicked: PlaylistController.removePlaylist(id)
+						focusPolicy: Qt.NoFocus
 					}
 				}
 			}
@@ -173,6 +176,7 @@ Item {
 					pointSize: 14
 				}
 				onClicked: FileList.startPlaying()
+				focusPolicy: Qt.NoFocus
 			}		
 
 			Label {

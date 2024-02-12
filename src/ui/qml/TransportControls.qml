@@ -111,6 +111,7 @@ Rectangle {
 					font.pixelSize: transportControls.height / 4
 					text: Video.paused ? "\uE6AD" : "\uE6AE"
 					onClicked: player.togglePause()
+					focusPolicy: Qt.NoFocus
 				}
 
 				Button {
@@ -142,6 +143,7 @@ Rectangle {
 					font.pixelSize: transportControls.height / 4
 					text: WindowController.fullScreen ? "\uE6C9" : "\uE659"
 					onClicked: WindowController.toggleFullScreen()
+					focusPolicy: Qt.NoFocus
 				}
 			}
 
