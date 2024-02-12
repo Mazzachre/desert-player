@@ -101,6 +101,7 @@ Rectangle {
 					font.pixelSize: transportControls.height / 4
 					text: "\uE723"
 					onClicked: FileList.playPrev()
+					focusPolicy: Qt.NoFocus
 				}
 
 				Button {
@@ -122,6 +123,7 @@ Rectangle {
 					font.pixelSize: transportControls.height / 4
 					text: "\uE6AB"
 					onClicked: player.stopMovie()
+					focusPolicy: Qt.NoFocus
 				}
 
 				Button {
@@ -133,6 +135,7 @@ Rectangle {
 					font.pixelSize: transportControls.height / 4
 					text: "\uE722"
 					onClicked: FileList.playNext()
+					focusPolicy: Qt.NoFocus
 				}
 				
 				Button {

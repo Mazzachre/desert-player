@@ -41,7 +41,7 @@ QVariant dp::player::SubtitleList::data(const QModelIndex& index, int role) cons
 		return QVariant();
 	}
     if (role == SelectedRole) {
-		return m_backing[index.row()][IdRole] == m_selected;
+		return m_external ? m_backing[index.row()][FilenameRole] == m_selected : m_backing[index.row()][IdRole] == m_selected;
 	}
 	return m_backing[index.row()][role];
 }
@@ -62,13 +62,7 @@ void dp::player::SubtitleList::setTracks(const QList<QVariant>& tracks) {
 }
 
 void dp::player::SubtitleList::setSelected(const QVariant& trackId) {
-	m_external = false;
-	for (const auto& track: m_backing) {
-		if (track[IdRole] == trackId) {
-			m_external = true;
-			break;
-		}
-	}
+	m_external = trackId.userType() == QMetaType::QString;
 	Q_EMIT externalChanged();
 	beginResetModel();
 	m_selected = trackId;
