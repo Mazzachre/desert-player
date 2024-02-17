@@ -12,6 +12,7 @@ QVariantMap findSeasonAndEpisode(const QString& fileName) {
 	return QVariantMap({{"start", l_episodeMatch.capturedStart()}, {"season", l_season}, {"episode", l_episode}});
 }
 
+//TODO This should find the last one...
 QVariantMap findYear(const QString& fileName) {
 	QRegularExpression l_matchYear("(19|20)\\d{2}");
 	QRegularExpressionMatch l_yearMatch = l_matchYear.match(fileName, 1);
@@ -36,11 +37,13 @@ QVariantMap findQuery(const QString& fileName) {
 File::File() {}
 
 File::File(
+	unsigned long long _id,
 	const QString& _path,
 	const QVariantMap& _mediaMeta,
 	const QVariantMap& _tracks,
 	const QVariantList& _playbackData
 ) {
+	id = _id;
 	path = _path;
 	mediaMeta = _mediaMeta;
 	tracks = _tracks;
@@ -48,6 +51,7 @@ File::File(
 }
 
 File::File(const File& other) {
+	id = other.id;
 	path = other.path;
 	mediaMeta = other.mediaMeta;
 	tracks = other.tracks;
@@ -55,6 +59,7 @@ File::File(const File& other) {
 }
 
 File& File::operator=(const File& other) {
+	id = other.id;
 	path = other.path;
 	mediaMeta = other.mediaMeta;
 	tracks = other.tracks;
@@ -68,15 +73,16 @@ bool File::isValid() {
 
 QDebug operator<<(QDebug dbg, const File& file) {
 	//TODO Perhaps this should be better?
-	dbg << "File:" << file.path << ":" << file.mediaMeta << file.tracks << file.playbackData;
+	dbg << "File:" << file.id << file.path << ":" << file.mediaMeta << file.tracks << file.playbackData;
 	return dbg;
 }
 
 Playlist::Playlist() {}
 
-Playlist::Playlist(uint _id, const QString& _label) {
+Playlist::Playlist(unsigned long long _id, const QString& _label, const QVector<unsigned long long>& _files) {
 	id = _id;
 	label = _label;
+	files = _files;
 }
 
 QDebug operator<<(QDebug dbg, const Playlist& playlist) {

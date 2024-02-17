@@ -27,6 +27,7 @@ public:
 	QString dateFormat() const;
 	QString timeFormat() const;
 	uint watchedBeforeSave() const;
+	uint ignoreContinueAfter() const;
 	uint showContinueFor() const;
 	uint showContinueBefore() const;
 

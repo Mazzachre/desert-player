@@ -47,7 +47,7 @@ QVariant dp::library::Playlists::data(const QModelIndex &index, int role) const 
 	return l_result;
 }
 
-void dp::library::Playlists::selectPlaylist(uint id) {
+void dp::library::Playlists::selectPlaylist(unsigned long long id) {
     if (m_selected != id) {
 		beginResetModel();
 		m_selected = id;
@@ -69,7 +69,7 @@ void dp::library::Playlists::setPlaylists(const QVector<Playlist>& playlists) {
 	endResetModel();
 }
 
-uint dp::library::Playlists::getSelected() {
+unsigned long long dp::library::Playlists::getSelected() {
 	return m_selected;
 }
 
@@ -78,4 +78,11 @@ QString dp::library::Playlists::getLabel() {
 		return item.id == m_selected;
 	});
 	return it == m_backing.end() ? "" : it->label;
+}
+
+QVector<unsigned long long> dp::library::Playlists::getFiles() {
+	auto it = std::find_if(m_backing.begin(), m_backing.end(), [&](Playlist& item) {
+		return item.id == m_selected;
+	});
+	return it == m_backing.end() ? QVector<unsigned long long>() : it->files;	
 }

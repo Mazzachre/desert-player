@@ -117,19 +117,19 @@ void dp::player::VideoList::continuePlayback() {
 }
 
 void dp::player::VideoList::startPlayback(const File& file) {
+	m_continueData = QVariantMap();
+	m_continueData["show"] = false;
 	if (!file.playbackData.isEmpty()) {
 		QVariantMap l_continueData = file.playbackData.last().toMap();
+		uint played = file.mediaMeta["duration"].isValid() ? (100* l_continueData["position"].toUInt()) / file.mediaMeta["duration"].toUInt() : 50;//If we don't have a duration we show this anyway, that is why the 50
 		qlonglong l_now = QDateTime::currentDateTime().toSecsSinceEpoch();
 		qlonglong l_started = l_continueData["started"].toLongLong();
-		if (l_now - l_started < dp::app::Config::instance()->showContinueBefore()) {
+		if (played < dp::app::Config::instance()->ignoreContinueAfter() && l_now - l_started < dp::app::Config::instance()->showContinueBefore()) {
 			m_continueData["started"] = QDateTime::fromSecsSinceEpoch(l_started, QTimeZone::systemTimeZone()).toString(dp::app::Config::instance()->dateFormat() + " " + dp::app::Config::instance()->timeFormat());
 			m_continueData["position"] = l_continueData["position"];
 		}
-	} else {
-		m_continueData = QVariantMap();
-		m_continueData["show"] = false;
-		Q_EMIT continueDataChanged();
 	}
+	Q_EMIT continueDataChanged();
 }
 
 void dp::player::VideoList::hideContinue() {

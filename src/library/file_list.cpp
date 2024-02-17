@@ -1,6 +1,7 @@
 #include "file_list.h"
 #include <QTime>
 #include "../app/config.h"
+#include "./playlists.h"
 
 QPointer<dp::library::FileList> dp::library::FileList::m_instance = nullptr;
 
@@ -18,10 +19,12 @@ dp::library::FileList* dp::library::FileList::instance() {
 
 QHash<int, QByteArray> dp::library::FileList::roleNames() const {
 	QHash<int, QByteArray> roles;
+	roles[IdRole] = "id";
 	roles[PathRole] = "path";
 	roles[TitleRole] = "title";
 	roles[DurationRole] = "duration";
 	roles[HasSubtitleRole] = "hasSubtitle";
+	roles[WasPlayedRole] = "wasPlayed";
 	roles[SelectedRole] = "selected";
 	return roles;
 }
@@ -30,16 +33,32 @@ int dp::library::FileList::rowCount(const QModelIndex&) const {
 	return m_backing.size();	
 }
 
+bool wasPlayed(const File& file) {
+	qlonglong l_now = QDateTime::currentDateTime().toSecsSinceEpoch();
+	QVariantMap l_continueData = file.playbackData.isEmpty() ? QVariantMap() : file.playbackData.last().toMap();
+	return ((l_now - l_continueData["started"].toLongLong()) < dp::app::Config::instance()->showContinueBefore());
+}
+
+QString playedList(const File& file) {
+	qDebug() << file.playbackData;
+	
+	//loop to make html string...
+	
+	return "";
+}
+
 QVariant dp::library::FileList::data(const QModelIndex &index, int role) const {
 	QVariant l_result;
 	if (index.isValid()) {
-		File l_file = m_backing[index.row()];
+		File l_file = m_backing[Playlists::instance()->getFiles()[index.row()]];
 		switch (role) {
+			case IdRole:
+				l_result = l_file.id;
+				break;
 			case PathRole:
 				l_result = l_file.path;
 				break;
 			case TitleRole:
-				//If we have year, season and episode we should add those too...
 				l_result = l_file.mediaMeta.value("title");
 				break;
 			case DurationRole:
@@ -48,89 +67,79 @@ QVariant dp::library::FileList::data(const QModelIndex &index, int role) const {
 			case HasSubtitleRole:
 				l_result = l_file.hasSubtitleStream(dp::app::Config::instance()->language(dp::app::Config::LanguageCodes::ISO_639_2)) || l_file.tracks.contains("subtitleTrack");
 				break;
+			case WasPlayedRole:
+				l_result = wasPlayed(l_file);
+				break;
 			case SelectedRole:
-				l_result = l_file.path == m_selected;
+				l_result = l_file.id == m_selected;
 				break;
 		}
 	}
 	return l_result;
 }
 
-void dp::library::FileList::setFileList(const QVector<File>& files, uint playlistId) {
+void dp::library::FileList::setFileList(const QVector<File>& files, unsigned long long playlistId) {
 	beginResetModel();
-	m_backing = files;
-	Q_EMIT playableUpdated();
-	if (m_backing.size() > 0) {
+	m_backing.clear();
+	m_paths.clear();
+
+	for (const File& file : files) {
+		m_backing[file.id] = file;
+		m_paths[file.path] = file.id;
+	}
+
+	if (m_backing.isEmpty()) {
+		m_selected = 0;
+	} else {
 		if (playlistId != m_playlistId) {
 			m_playlistId = playlistId;
-			m_selected = m_backing[0].path;
-		} else {
-			auto it = std::find_if(m_backing.begin(), m_backing.end(), [&](File& item) {
-				return item.path == m_selected;
-			});
-			if (it == m_backing.end()) {
-				m_selected = m_backing[0].path;
-			}
+			m_selected = Playlists::instance()->getFiles()[0];
+		} else if(!m_backing.contains(m_selected)) {
+			m_selected = Playlists::instance()->getFiles()[0];			
 		}
-	} else {
-		m_selected = QString();
 	}
+
+	Q_EMIT playableUpdated();
 	endResetModel();
 }
 
 void dp::library::FileList::selectFile(const QString& path) {
 	beginResetModel();
-	m_selected = path;
+	m_selected = m_paths[path];
 	Q_EMIT fileSelected(path);
 	endResetModel();
 }
 
 void dp::library::FileList::startPlaying() {
-	if (m_backing.size() > 0) {
-		auto it = std::find_if(m_backing.begin(), m_backing.end(), [&](File& item) {
-			return item.path == m_selected;
-		});
-		File* l_file = (it != m_backing.end()) ? it : m_backing.data();
-		Q_EMIT playFile(*l_file);
+	if (m_backing.size() > 0 && m_backing.contains(m_selected)) {
+		Q_EMIT playFile(m_backing[m_selected]);
 	}
 }
 
 void dp::library::FileList::playPrev() {
 	if (hasPrev()) {
-		auto it = std::find_if(m_backing.begin(), m_backing.end(), [&](File& item) {
-			return item.path == m_selected;
-		});
-		if (it != m_backing.end() && it != m_backing.begin()) {
-			auto prev = std::prev(it);
-			Q_EMIT playFile(*prev);
-			return;
-		}
+		int l_index = Playlists::instance()->getFiles().indexOf(m_selected) - 1;
+		Q_EMIT playFile(m_backing[Playlists::instance()->getFiles()[l_index]]);
+	} else {
+		Q_EMIT playlistFinished();
 	}
-	Q_EMIT playlistFinished();
 }
 
 void dp::library::FileList::playNext() {
 	if (hasNext()) {
-		auto it = std::find_if(m_backing.begin(), m_backing.end(), [&](File& item) {
-			return item.path == m_selected;
-		});
-		if (it != m_backing.end()) {
-			auto next = std::next(it);
-			if (next != m_backing.end()) {
-				Q_EMIT playFile(*next);
-				return;
-			}
-		}
+		int l_index = Playlists::instance()->getFiles().indexOf(m_selected) + 1;
+		Q_EMIT playFile(m_backing[Playlists::instance()->getFiles()[l_index]]);
+	} else {
+		Q_EMIT playlistFinished();
 	}
-	Q_EMIT playlistFinished();
 }
 
 bool dp::library::FileList::hasPrev() {
-	return m_backing.size() != 0 && m_selected != m_backing.first().path;
+	return m_backing.size() != 0 && Playlists::instance()->getFiles().first() != m_selected;
 }
 
 bool dp::library::FileList::hasNext() {
-	return m_backing.size() != 0 && m_selected != m_backing.last().path;	
+	return m_backing.size() != 0 && Playlists::instance()->getFiles().last() != m_selected;
 }
 
 bool dp::library::FileList::getPlayable() {

@@ -21,10 +21,12 @@ public:
 	static FileList* instance();
 
 	enum PlaylistsRoles {
-		PathRole = Qt::UserRole + 1,
+		IdRole = Qt::UserRole + 1,
+		PathRole,
 		TitleRole,
 		DurationRole,
 		HasSubtitleRole,
+		WasPlayedRole,
 		SelectedRole
 	};
 
@@ -52,11 +54,12 @@ private:
 	explicit FileList(QObject* parent = nullptr);
 	static void init(QObject* parent = nullptr);
 
-	QVector<File> m_backing;
-	QString m_selected;
-	uint m_playlistId;
+	QHash<unsigned long long, File> m_backing;
+	QHash<QString, unsigned long long> m_paths;
+	unsigned long long m_selected;
+	unsigned long long m_playlistId;
 
-	Q_SLOT void setFileList(const QVector<File>& files, uint playlistId);
+	Q_SLOT void setFileList(const QVector<File>& files, unsigned long long playlistId);
 
 	friend class dp::app::App;	
 };

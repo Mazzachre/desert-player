@@ -14,7 +14,7 @@ class FilesWorker : public QObject {
 	Q_OBJECT
 
 public:
-	Q_SLOT void addFiles(const QList<QUrl>& paths, uint playlistId);
+	Q_SLOT void addFiles(const QList<QUrl>& paths, unsigned long long playlistId);
 	Q_SIGNAL void progressUpdate(QVariant current, QVariant total);
 
 	Q_SIGNAL void error(const QString& error);
@@ -26,7 +26,7 @@ private:
 
 	QVariantMap m_fileTypes;
 	QList<File> m_files;
-	uint m_playlistId = 0;
+	unsigned long long m_playlistId = 0;
 	uint m_total = 0;
 	uint m_done = 0;
 
@@ -40,6 +40,6 @@ private:
 	Q_SIGNAL void createFiles(const QList<File>& files);
 	Q_SLOT void filesCreated(const QList<File>& files);
 	
-	Q_SIGNAL void addToPlaylist(const QList<File>& files, uint playlistId);
+	Q_SIGNAL void addToPlaylist(unsigned long long playlistId, const QVector<unsigned long long>& files);
 };
 }}

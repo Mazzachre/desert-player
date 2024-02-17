@@ -33,6 +33,7 @@ Rectangle {
 		Button {
 			text: "Continue"
 			onClicked: Video.continuePlayback();
+			focusPolicy: Qt.NoFocus
 		}
 	}
 }

@@ -22,7 +22,7 @@ void dp::app::Config::init(QObject *parent) {
 }
 
 uint dp::app::Config::version() const {
-	return 1;
+	return 2;
 }
 
 QString dp::app::Config::dataDir() const {
@@ -61,6 +61,10 @@ QString dp::app::Config::timeFormat() const {
 
 uint dp::app::Config::watchedBeforeSave() const {
 	return m_values.value("watchedBeforeSave", 300).toULongLong();
+}
+
+uint dp::app::Config::ignoreContinueAfter() const {
+	return m_values.value("ignoreContinueAfter", 300).toULongLong();
 }
 
 uint dp::app::Config::showContinueFor() const {

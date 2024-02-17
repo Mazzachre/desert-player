@@ -34,13 +34,15 @@ QString loadSqlScript(uint version) {
 
 uint initDb(const QSqlDatabase& db, uint version) {
 	QString script = loadSqlScript(version);
-	if (script.isEmpty()) qFatal("Unable to run database script %d", version);
+	if (script.isEmpty()) qFatal("Unable to load database script %d", version);
+
 	QSqlQuery query(db);
 	for (auto& line : script.split("\n")) {
 		if (line.trimmed().size() > 0) {
-			if (!query.exec(line)) qFatal("Sql Script Error: %s", db.lastError().text().toUtf8().constData());
+			if (!query.exec(line)) qFatal("Sql Script Error: %s", query.lastError().text().toUtf8().constData());
 		}
 	}
+
 	if (!query.exec(QString("UPDATE version SET version_number = %1").arg(version))) qFatal("Update version Error: %s", db.lastError().text().toUtf8().constData());
 	return version;
 }
@@ -54,6 +56,7 @@ void initDb(const QSqlDatabase& db) {
 
 File fileFromQuery(QSqlQuery entry) {
 	return File(
+		entry.value("rowid").toULongLong(),
 		entry.value("path").toString(),
 		QJsonDocument::fromJson(entry.value("media").toByteArray()).object().toVariantMap(),
 		QJsonDocument::fromJson(entry.value("tracks").toByteArray()).object().toVariantMap(),
@@ -86,7 +89,7 @@ void dp::data::Data::init(QObject *parent) {
 
 QVariant dp::data::Data::getFile(const QString& path) {
 	QSqlQuery l_query(m_db);
-	l_query.prepare("SELECT path, media, tracks, playback FROM files WHERE path = :path");
+	l_query.prepare("SELECT rowid, path, media, tracks, playback FROM files WHERE path = :path");
 	l_query.bindValue(":path", path);
 	if (!l_query.exec()) {
 		Q_EMIT error(l_query.lastError().text());
@@ -97,7 +100,7 @@ QVariant dp::data::Data::getFile(const QString& path) {
 }
 
 QVariant dp::data::Data::createFile(const File& file) {
-	QVariant l_file;
+	QVariant l_result;
 	QSqlQuery l_query(m_db);
 	l_query.prepare("INSERT INTO files (path, media, tracks) VALUES (:path, :media, :tracks)");
 	l_query.bindValue(":path", file.path);
@@ -106,29 +109,39 @@ QVariant dp::data::Data::createFile(const File& file) {
 	if(!l_query.exec()) {
 		Q_EMIT error(l_query.lastError().text());
 	} else {
-		l_file.setValue(file);
+		l_result.setValue(File(
+			l_query.lastInsertId().toULongLong(),
+			file.path,
+			file.mediaMeta,
+			file.tracks,
+			file.playbackData
+		));
 	}
-	return l_file;
+	return l_result;
 }
 
 QVector<Playlist> dp::data::Data::getPlaylists() {
 	QVector<Playlist> l_playlists;
 	QSqlQuery l_query(m_db);
-	l_query.prepare("SELECT rowid, label FROM playlists");
+	l_query.prepare("SELECT rowid, label, files FROM playlists");
 	if (!l_query.exec()) {
 		Q_EMIT error(l_query.lastError().text());
 	} else {
 		while (l_query.next()) {
-			l_playlists << Playlist(l_query.value("rowid").toUInt(), l_query.value("label").toString());
+			QVector<unsigned long long> l_files;
+			for (const QString& l_id : l_query.value("files").toString().split(',')) {
+				l_files.append(l_id.toULongLong());
+			}
+			l_playlists << Playlist(l_query.value("rowid").toUInt(), l_query.value("label").toString(), l_files);
 		}
 	}
 	return l_playlists;
 }
 
-QVector<File> dp::data::Data::getFileList(uint playlistId) {
+QVector<File> dp::data::Data::getFileList(unsigned long long playlistId) {
 	QVector<File> l_fileList;
 	QSqlQuery l_query(m_db);
-	l_query.prepare("SELECT path, media, tracks, playback FROM files WHERE path IN (SELECT file FROM playlistFiles WHERE playlist = :id) ORDER BY rowid");
+	l_query.prepare("SELECT rowid, path, media, tracks, playback FROM files WHERE INSTR(',' || (SELECT files FROM playlists WHERE rowid = :id) || ',', ',' || CAST(rowid AS TEXT) || ',') > 0;");
 	l_query.bindValue(":id", playlistId);
 	if (!l_query.exec()) {
 		Q_EMIT error(l_query.lastError().text());
@@ -149,7 +162,7 @@ void dp::data::Data::startup() {
 	}
 }
 
-void dp::data::Data::updatePlaylistName(uint playlistId, const QString& label) {
+void dp::data::Data::updatePlaylistName(unsigned long long playlistId, const QString& label) {
 	QSqlQuery l_query(m_db);
 	l_query.prepare("UPDATE playlists SET label = :label WHERE rowid = :id");
 	l_query.bindValue(":label", label);
@@ -158,7 +171,7 @@ void dp::data::Data::updatePlaylistName(uint playlistId, const QString& label) {
 	else Q_EMIT fileListUpdated(getFileList(playlistId), playlistId);
 }
 
-void dp::data::Data::removePlaylist(uint id) {
+void dp::data::Data::removePlaylist(unsigned long long id) {
 	QSqlQuery l_pl_query(m_db);
 	l_pl_query.prepare("DELETE FROM playlists WHERE rowid = :id");
 	l_pl_query.bindValue(":id", id);
@@ -180,31 +193,49 @@ void dp::data::Data::addPlaylist(const QString& label) {
 	else Q_EMIT playlistsUpdated(getPlaylists());
 }
 
-void dp::data::Data::removeFileFromPlaylist(const QString& file, uint playlistId) {
+void dp::data::Data::updatePlaylistFiles(unsigned long long playlistId, QVector<unsigned long long> files) {
+	QStringList l_ids;
+	std::transform(files.begin(), files.end(), std::back_inserter(l_ids), [](unsigned long long id) { return QString::number(id); });	
+
 	QSqlQuery l_query(m_db);
-	l_query.prepare("DELETE FROM playlistFiles WHERE playlist = :id AND file = :file");
+	l_query.prepare("UPDATE playlists SET files = :files WHERE rowid = :id");
+	l_query.bindValue(":id", playlistId);
+	l_query.bindValue(":files", l_ids);
+	if (!l_query.exec()) Q_EMIT error(l_query.lastError().text());
+	else {
+		Q_EMIT playlistsUpdated(getPlaylists());
+		Q_EMIT fileListUpdated(getFileList(playlistId), playlistId);
+	}
+}
+
+void dp::data::Data::appendPlaylistFiles(unsigned long long playlistId, QVector<unsigned long long> files) {
+	QStringList l_ids;
+	std::transform(files.begin(), files.end(), std::back_inserter(l_ids), [](unsigned long long id) { return QString::number(id); });	
+	
+	QSqlQuery l_query(m_db);
+	l_query.prepare("UPDATE playlists SET files = COALESCE(files || ',', '') || :files WHERE rowid = :id");
+	l_query.bindValue(":id", playlistId);
+	l_query.bindValue(":files", l_ids);
+	if (!l_query.exec()) Q_EMIT error(l_query.lastError().text());
+	else {
+		Q_EMIT playlistsUpdated(getPlaylists());
+		Q_EMIT fileListUpdated(getFileList(playlistId), playlistId);
+	}
+}
+
+void dp::data::Data::deletePlaylistFile(unsigned long long playlistId, unsigned long long file) {
+	QSqlQuery l_query(m_db);
+	l_query.prepare("UPDATE playlists SET files = REPLACE(files, :file || ',', '') WHERE rowid = :id");
 	l_query.bindValue(":id", playlistId);
 	l_query.bindValue(":file", file);
-	if(!l_query.exec()) Q_EMIT error(l_query.lastError().text());
-	else Q_EMIT fileListUpdated(getFileList(playlistId), playlistId);
-}
-
-void dp::data::Data::addFilesToPlaylist(const QList<File>& files, uint playlistId) {
-	QSqlQuery l_query(m_db);
-	l_query.prepare("INSERT INTO playlistFiles (playlist, file) VALUES (:playlist, :file)");
-	QVariantList idList;
-	QVariantList fileList;
-	for (auto& file : files) {
-		idList << playlistId;
-		fileList << file.path;
+	if (!l_query.exec()) Q_EMIT error(l_query.lastError().text());
+	else {
+		Q_EMIT playlistsUpdated(getPlaylists());
+		Q_EMIT fileListUpdated(getFileList(playlistId), playlistId);
 	}
-	l_query.bindValue(":playlist", idList);
-	l_query.bindValue(":file", fileList);
-	if (!l_query.execBatch()) Q_EMIT error(l_query.lastError().text());
-	else Q_EMIT fileListUpdated(getFileList(playlistId), playlistId);
 }
 
-void dp::data::Data::playlistSelected(uint playlistId) {
+void dp::data::Data::playlistSelected(unsigned long long playlistId) {
 	Q_EMIT fileListUpdated(getFileList(playlistId), playlistId);
 }
 
@@ -232,7 +263,7 @@ void dp::data::Data::createFiles(const QList<File>& files) {
 	Q_EMIT filesCreated(l_result);	
 }
 
-void dp::data::Data::updateTracks(const QString& path, const QVariantMap& tracks, uint playlistId) {
+void dp::data::Data::updateTracks(const QString& path, const QVariantMap& tracks, unsigned long long playlistId) {
 	QSqlQuery l_query(m_db);
 	l_query.prepare("UPDATE files SET tracks = :tracks WHERE path = :path");
 	l_query.bindValue(":tracks", QJsonDocument::fromVariant(tracks).toJson(QJsonDocument::Compact));
@@ -241,7 +272,7 @@ void dp::data::Data::updateTracks(const QString& path, const QVariantMap& tracks
 	else Q_EMIT fileListUpdated(getFileList(playlistId), playlistId);
 }
 
-void dp::data::Data::updatePlaybackData(const QString& path, const QVariantList& playbackData, uint playlistId) {
+void dp::data::Data::updatePlaybackData(const QString& path, const QVariantList& playbackData, unsigned long long playlistId) {
 	QSqlQuery l_query(m_db);
 	l_query.prepare("UPDATE files SET playback = :playback WHERE path = :path");
 	l_query.bindValue(":playback", QJsonDocument::fromVariant(playbackData).toJson(QJsonDocument::Compact));

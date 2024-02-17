@@ -10,12 +10,14 @@
  * playbackData: [position, started, accomulated]
  */
 struct File {
+	unsigned long long id;
 	QString path;
 	QVariantMap mediaMeta;
 	QVariantMap tracks;
 	QVariantList playbackData;
 	explicit File();
 	explicit File(
+		unsigned long long id,
 		const QString& path,
 		const QVariantMap& mediaMeta,
 		const QVariantMap& tracks,
@@ -32,10 +34,11 @@ Q_DECLARE_METATYPE(File);
 QDebug operator<<(QDebug dbg, const File& file);
 
 struct Playlist {
-	uint id;
+	unsigned long long id;
 	QString label;
+	QVector<unsigned long long> files;
 	explicit Playlist();
-	explicit Playlist(uint id, const QString& label);
+	explicit Playlist(unsigned long long id, const QString& label, const QVector<unsigned long long>& files);
 };
 Q_DECLARE_METATYPE(Playlist);
 QDebug operator<<(QDebug dbg, const Playlist& playlist);

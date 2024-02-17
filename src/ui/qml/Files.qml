@@ -41,7 +41,7 @@ ListView {
 
 			Text {
 				id: titleText
-				width: parent.width - 140
+				width: parent.width - 160
 				text: title
 				elide: Text.ElideRight
 				padding: 3
@@ -57,7 +57,16 @@ ListView {
 			}
 
 			Text {
-				id: ccText
+				width: 20
+				text: wasPlayed ? "\uE72B" : " "
+				font {
+					family: icons.name
+					pointSize: 10
+				}
+				padding: 3
+			}
+
+			Text {
 				width: 20
 				text: hasSubtitle ? "\uF20A" : " "
 				font {
@@ -68,7 +77,6 @@ ListView {
 			}
 
 			Text {
-				id: durationText
 				width: 60
 				text: duration
 				padding: 3
@@ -82,7 +90,7 @@ ListView {
 					family: icons.name
 					pointSize: 12
 				}
-				onClicked: PlaylistController.removeFile(path)
+				onClicked: PlaylistController.removeFile(id)
 				focusPolicy: Qt.NoFocus
 			}
 		}

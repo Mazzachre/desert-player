@@ -18,7 +18,7 @@ dp::library::PlaylistController::PlaylistController(QObject *parent)
 	m_workerThread->start();
 	connect(this, &PlaylistController::createPlaylist, dp::data::Data::instance(), &dp::data::Data::addPlaylist, Qt::QueuedConnection);
 	connect(this, &PlaylistController::deletePlaylist, dp::data::Data::instance(), &dp::data::Data::removePlaylist, Qt::QueuedConnection);
-	connect(this, &PlaylistController::removeFileFromPlaylist, dp::data::Data::instance(), &dp::data::Data::removeFileFromPlaylist, Qt::QueuedConnection);
+	connect(this, &PlaylistController::removeFileFromPlaylist, dp::data::Data::instance(), &dp::data::Data::deletePlaylistFile, Qt::QueuedConnection);
 }
 
 dp::library::PlaylistController::~PlaylistController() {
@@ -40,8 +40,8 @@ void dp::library::PlaylistController::addFiles(const QList<QUrl>& paths) {
 	Q_EMIT addFilesToPlaylist(paths, Playlists::instance()->getSelected());
 }
 
-void dp::library::PlaylistController::removeFile(const QString& path) {
-	Q_EMIT removeFileFromPlaylist(path, Playlists::instance()->getSelected());
+void dp::library::PlaylistController::removeFile(unsigned long long fileId) {
+	Q_EMIT removeFileFromPlaylist(Playlists::instance()->getSelected(), fileId);
 }
 
 void dp::library::PlaylistController::handleError(const QString& errorString) {
@@ -68,10 +68,10 @@ void dp::library::PlaylistController::addPlaylist() {
 	Q_EMIT createPlaylist(l_label);
 }
 
-void dp::library::PlaylistController::removePlaylist(uint id) {
+void dp::library::PlaylistController::removePlaylist(unsigned long long id) {
 	Q_EMIT deletePlaylist(id);
 }
 
-void dp::library::PlaylistController::updateLabel(uint id, const QString& label) {
+void dp::library::PlaylistController::updateLabel(unsigned long long id, const QString& label) {
 	Q_EMIT updatePlaylistName(id, label);
 }
