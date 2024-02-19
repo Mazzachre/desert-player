@@ -65,9 +65,12 @@ void dp::app::App::connectSignals() {
 	connect(player, &dp::player::MpvPlayer::positionChanged, m_keepAlive, &dp::ui::KeepAlive::moviePlaying);
 
 	//Playlist to data
-	connect(dp::library::Playlists::instance(), &dp::library::Playlists::playlistSelected, dp::data::Data::instance(), &dp::data::Data::playlistSelected);
+	connect(dp::library::Playlists::instance(), &dp::library::Playlists::playlistSelected, dp::data::Data::instance(), &dp::data::Data::playlistSelected, Qt::QueuedConnection);
 	connect(dp::data::Data::instance(), &dp::data::Data::playlistsUpdated, dp::library::Playlists::instance(), &dp::library::Playlists::setPlaylists);
 	connect(dp::data::Data::instance(), &dp::data::Data::fileListUpdated, dp::library::FileList::instance(), &dp::library::FileList::setFileList);
+	connect(dp::library::PlaylistController::instance(), &dp::library::PlaylistController::createPlaylist, dp::data::Data::instance(), &dp::data::Data::addPlaylist, Qt::QueuedConnection);
+	connect(dp::library::PlaylistController::instance(), &dp::library::PlaylistController::deletePlaylist, dp::data::Data::instance(), &dp::data::Data::removePlaylist, Qt::QueuedConnection);
+	connect(dp::library::PlaylistController::instance(), &dp::library::PlaylistController::updatePlaylistFiles, dp::data::Data::instance(), &dp::data::Data::updatePlaylistFiles, Qt::QueuedConnection);
 
 	//UI to player
 	connect(dp::ui::WindowController::instance(), &dp::ui::WindowController::playerTogglePause, player, &dp::player::MpvPlayer::togglePause);

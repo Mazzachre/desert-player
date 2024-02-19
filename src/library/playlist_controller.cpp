@@ -2,7 +2,6 @@
 #include "playlists.h"
 #include <QDateTime>
 #include "../app/config.h"
-#include "../data/data.h"
 
 QPointer<dp::library::PlaylistController> dp::library::PlaylistController::m_instance = nullptr;
 
@@ -14,11 +13,9 @@ dp::library::PlaylistController::PlaylistController(QObject *parent)
 	connect(this, &PlaylistController::addFilesToPlaylist, m_worker, &FilesWorker::addFiles);
 	connect(m_worker, &FilesWorker::error, this, &PlaylistController::handleError);
 	connect(m_worker, &FilesWorker::progressUpdate, this, &PlaylistController::handleProgress);
+	connect(m_worker, &FilesWorker::addToPlaylist, this, &PlaylistController::appendFiles);
 	connect(m_workerThread, &QThread::finished, m_worker, &QObject::deleteLater);
 	m_workerThread->start();
-	connect(this, &PlaylistController::createPlaylist, dp::data::Data::instance(), &dp::data::Data::addPlaylist, Qt::QueuedConnection);
-	connect(this, &PlaylistController::deletePlaylist, dp::data::Data::instance(), &dp::data::Data::removePlaylist, Qt::QueuedConnection);
-	connect(this, &PlaylistController::removeFileFromPlaylist, dp::data::Data::instance(), &dp::data::Data::deletePlaylistFile, Qt::QueuedConnection);
 }
 
 dp::library::PlaylistController::~PlaylistController() {
@@ -37,11 +34,7 @@ dp::library::PlaylistController* dp::library::PlaylistController::instance() {
 }
 
 void dp::library::PlaylistController::addFiles(const QList<QUrl>& paths) {
-	Q_EMIT addFilesToPlaylist(paths, Playlists::instance()->getSelected());
-}
-
-void dp::library::PlaylistController::removeFile(unsigned long long fileId) {
-	Q_EMIT removeFileFromPlaylist(Playlists::instance()->getSelected(), fileId);
+	Q_EMIT addFilesToPlaylist(paths);
 }
 
 void dp::library::PlaylistController::handleError(const QString& errorString) {
@@ -68,10 +61,22 @@ void dp::library::PlaylistController::addPlaylist() {
 	Q_EMIT createPlaylist(l_label);
 }
 
-void dp::library::PlaylistController::removePlaylist(unsigned long long id) {
+void dp::library::PlaylistController::removePlaylist(qulonglong id) {
 	Q_EMIT deletePlaylist(id);
 }
 
-void dp::library::PlaylistController::updateLabel(unsigned long long id, const QString& label) {
+void dp::library::PlaylistController::updateLabel(qulonglong id, const QString& label) {
 	Q_EMIT updatePlaylistName(id, label);
+}
+
+void dp::library::PlaylistController::removeFile(qulonglong id) {
+	QVector<qulonglong> l_list(Playlists::instance()->getFiles());
+	l_list.removeOne(id);
+	Q_EMIT updatePlaylistFiles(Playlists::instance()->getSelected(), l_list);
+}
+
+void dp::library::PlaylistController::appendFiles(const QVector<qulonglong>& files) {
+	QVector<qulonglong> l_list(Playlists::instance()->getFiles());
+	l_list << files;
+	Q_EMIT updatePlaylistFiles(Playlists::instance()->getSelected(), l_list);
 }

@@ -58,12 +58,29 @@ ListView {
 
 			Text {
 				width: 20
-				text: wasPlayed ? "\uE72B" : " "
+				text: wasStarted ? wasPlayed ? "\uE63B" : "\uE63A" : " "
+				color: startedRecently ? "black" : "grey"
 				font {
 					family: icons.name
 					pointSize: 10
 				}
 				padding: 3
+
+				ToolTip {
+					visible: wasStarted ? playedTT.containsMouse : false
+					delay: 1000
+					contentItem: Text {
+						padding: 3
+						text: playedList
+						textFormat: Text.RichText
+					}
+				}
+
+				MouseArea {
+					id: playedTT
+					anchors.fill: parent
+					hoverEnabled: true
+				}
 			}
 
 			Text {

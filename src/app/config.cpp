@@ -59,12 +59,13 @@ QString dp::app::Config::timeFormat() const {
 	return m_values.value("timeFormat", "h:mm ap").toString();
 }
 
+//TODO This should be 10%
 uint dp::app::Config::watchedBeforeSave() const {
 	return m_values.value("watchedBeforeSave", 300).toULongLong();
 }
 
 uint dp::app::Config::ignoreContinueAfter() const {
-	return m_values.value("ignoreContinueAfter", 300).toULongLong();
+	return m_values.value("ignoreContinueAfter", 90).toULongLong();
 }
 
 uint dp::app::Config::showContinueFor() const {
@@ -72,5 +73,5 @@ uint dp::app::Config::showContinueFor() const {
 }
 
 uint dp::app::Config::showContinueBefore() const {
-	return m_values.value("showContinueBefore", 14* 24 * 60 * 60).toULongLong();
+	return m_values.value("showContinueBefore", 14 * 24 * 60 * 60).toULongLong();
 }

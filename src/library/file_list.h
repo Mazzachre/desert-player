@@ -20,13 +20,19 @@ class FileList : public QAbstractListModel
 public:
 	static FileList* instance();
 
+	//was started (has any entries?)
+	//was played (is last entry played > ignoreContinueAfter)
+	//started recently (is last entry started < showContinueBefore)
 	enum PlaylistsRoles {
 		IdRole = Qt::UserRole + 1,
 		PathRole,
 		TitleRole,
 		DurationRole,
 		HasSubtitleRole,
+		WasStartedRole,
+		StartedRecentlyRole,
 		WasPlayedRole,
+		PlayedListRole,
 		SelectedRole
 	};
 
@@ -42,7 +48,7 @@ public:
 	Q_SLOT void playPrev();
 	Q_SIGNAL void playFile(const File& file);
 	Q_SIGNAL void playlistFinished();
-	
+		
 	bool getPlayable();
 	Q_SIGNAL void playableUpdated();
 
@@ -54,12 +60,12 @@ private:
 	explicit FileList(QObject* parent = nullptr);
 	static void init(QObject* parent = nullptr);
 
-	QHash<unsigned long long, File> m_backing;
-	QHash<QString, unsigned long long> m_paths;
-	unsigned long long m_selected;
-	unsigned long long m_playlistId;
+	QHash<qulonglong, File> m_backing;
+	QHash<QString, qulonglong> m_paths;
+	qulonglong m_selected;
+	qulonglong m_playlistId;
 
-	Q_SLOT void setFileList(const QVector<File>& files, unsigned long long playlistId);
+	Q_SLOT void setFileList(const QVector<File>& files, qulonglong playlistId);
 
 	friend class dp::app::App;	
 };

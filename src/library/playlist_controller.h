@@ -20,10 +20,11 @@ public:
 	static PlaylistController* instance();
 
 	Q_SLOT void addFiles(const QList<QUrl>& paths);
-	Q_SLOT void removeFile(unsigned long long id);
 	Q_SLOT void addPlaylist();
-	Q_SLOT void updateLabel(unsigned long long id, const QString& label);
-	Q_SLOT void removePlaylist(unsigned long long id);
+	Q_SLOT void removeFile(qulonglong id);
+	Q_SLOT void appendFiles(const QVector<qulonglong>& files);
+	Q_SLOT void updateLabel(qulonglong id, const QString& label);
+	Q_SLOT void removePlaylist(qulonglong id);
 
 	QVariantMap getProgress();
 	Q_SIGNAL void progressChanged();
@@ -38,11 +39,11 @@ private:
 	~PlaylistController();
 	static void init(QObject *parent = nullptr);
 
-	Q_SIGNAL void addFilesToPlaylist(const QList<QUrl>& paths, unsigned long long playlistId);
-	Q_SIGNAL void removeFileFromPlaylist(unsigned long long playlistId, unsigned long long fileId);
+	Q_SIGNAL void updatePlaylistFiles(qulonglong playlistId, QVector<qulonglong> files);
 	Q_SIGNAL void createPlaylist(const QString& label);
-	Q_SIGNAL void deletePlaylist(unsigned long long id);
-	Q_SIGNAL void updatePlaylistName(unsigned long long id, const QString& label);
+	Q_SIGNAL void deletePlaylist(qulonglong id);
+	Q_SIGNAL void updatePlaylistName(qulonglong id, const QString& label);
+	Q_SIGNAL void addFilesToPlaylist(const QList<QUrl>& paths);
 	Q_SLOT void handleError(const QString& error);
 	Q_SLOT void handleProgress(QVariant current, QVariant work);
 

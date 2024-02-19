@@ -83,7 +83,6 @@ dp::library::FilesWorker::FilesWorker(QObject* parent)
 	connect(dp::data::Data::instance(), &dp::data::Data::filesLoaded, this, &FilesWorker::filesLoaded, Qt::QueuedConnection);
 	connect(this, &FilesWorker::createFiles, dp::data::Data::instance(), &dp::data::Data::createFiles, Qt::QueuedConnection);
 	connect(dp::data::Data::instance(), &dp::data::Data::filesCreated, this, &FilesWorker::filesCreated, Qt::QueuedConnection);
-	connect(this, &FilesWorker::addToPlaylist, dp::data::Data::instance(), &dp::data::Data::appendPlaylistFiles, Qt::QueuedConnection);
 }
 
 void dp::library::FilesWorker::fileMimeType(const QFileInfo& file) {
@@ -104,14 +103,13 @@ void dp::library::FilesWorker::walkDirectory(const QDir& dir) {
 	}
 }
 
-void dp::library::FilesWorker::addFiles(const QList<QUrl>& paths, unsigned long long playlistId) {
-	if (m_playlistId != 0) {
+void dp::library::FilesWorker::addFiles(const QList<QUrl>& paths) {
+	if (m_total != 0) {
 		Q_EMIT error("Files worker already adding files");
 		return;
 	}
-	m_playlistId = playlistId;
 	m_done = 0;
-	m_total = 0;
+	m_total = 1;
 	Q_EMIT progressUpdate(m_done, m_total);
 	
 	for (auto& path : paths ) {
@@ -191,18 +189,17 @@ void dp::library::FilesWorker::filesLoaded(const QList<File>& files) {
 }
 
 void dp::library::FilesWorker::filesCreated(const QList<File>& files) {
-	QVector<unsigned long long> l_files;
+	QVector<qulonglong> l_files;
 	for (auto& l_file : m_files) {
 		l_files << l_file.id;
 	}
 	for (auto& l_file : files) {
 		l_files << l_file.id;
 	}
-	Q_EMIT addToPlaylist(m_playlistId, l_files);
+	Q_EMIT addToPlaylist(l_files);
 	
 	m_fileTypes.clear();
 	m_files.clear();
-	m_playlistId = 0;
 	m_total = 0;
 	m_done = 0;
 	Q_EMIT progressUpdate(QVariant(), QVariant());

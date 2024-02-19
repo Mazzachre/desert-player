@@ -67,8 +67,25 @@ File& File::operator=(const File& other) {
 	return *this;
 }
 
-bool File::isValid() {
-	return !path.isEmpty();
+bool File::isValid() const {
+	return id > 0 && !path.isEmpty();
+}
+
+bool File::hasSubtitleStream(const QString& language) const {
+	QList<QVariant> l_streams = mediaMeta.value("streams").toList();
+	for (auto& l_stream_entry : l_streams) {
+		QVariantMap l_stream = l_stream_entry.toMap();
+		if (l_stream.value("type") == QStringLiteral("subtitle")) {
+			if (l_stream.value("language") == language) return true;
+			if (l_stream.value("language") == QStringLiteral("unknown")) return true;
+		}
+	}
+	return false;
+}
+
+qulonglong File::getDurationPercentage(uint percentage) const {
+	//default to an hour if we don't have duration data
+	return (mediaMeta["duration"].isValid() ? mediaMeta["duration"].toUInt() : 3600)* percentage / 100;
 }
 
 QDebug operator<<(QDebug dbg, const File& file) {
@@ -90,18 +107,7 @@ QDebug operator<<(QDebug dbg, const Playlist& playlist) {
 	return dbg;
 }
 
-bool File::hasSubtitleStream(const QString& language) {
-	QList<QVariant> l_streams = mediaMeta.value("streams").toList();
-	for (auto& l_stream_entry : l_streams) {
-		QVariantMap l_stream = l_stream_entry.toMap();
-		if (l_stream.value("type") == QStringLiteral("subtitle")) {
-			if (l_stream.value("language") == language) return true;
-			if (l_stream.value("language") == QStringLiteral("unknown")) return true;
-		}
-	}
-	return false;
-}
-
+/*
 QVariantMap File::getQueryData() {
 	QFileInfo l_fi(path);
 	QString l_title = l_fi.fileName().chopped(4);
@@ -113,3 +119,4 @@ QVariantMap File::getEpisodeData(const QString& path) {
 	QString l_title = l_fi.fileName().chopped(4);
 	return findSeasonAndEpisode(l_title);
 }
+*/

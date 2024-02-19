@@ -1,5 +1,7 @@
 #include "file_list.h"
 #include <QTime>
+#include <QDateTime>
+#include <QTimeZone>
 #include "../app/config.h"
 #include "./playlists.h"
 
@@ -24,7 +26,10 @@ QHash<int, QByteArray> dp::library::FileList::roleNames() const {
 	roles[TitleRole] = "title";
 	roles[DurationRole] = "duration";
 	roles[HasSubtitleRole] = "hasSubtitle";
+	roles[WasStartedRole] = "wasStarted";
+	roles[StartedRecentlyRole] = "startedRecently";
 	roles[WasPlayedRole] = "wasPlayed";
+	roles[PlayedListRole] = "playedList";
 	roles[SelectedRole] = "selected";
 	return roles;
 }
@@ -33,18 +38,48 @@ int dp::library::FileList::rowCount(const QModelIndex&) const {
 	return m_backing.size();	
 }
 
-bool wasPlayed(const File& file) {
+bool wasStarted(const File& file) {
+	return !file.playbackData.isEmpty();
+}
+
+bool wasStartedRecently(const File& file) {
+	if (!wasStarted(file)) return false;
 	qlonglong l_now = QDateTime::currentDateTime().toSecsSinceEpoch();
 	QVariantMap l_continueData = file.playbackData.isEmpty() ? QVariantMap() : file.playbackData.last().toMap();
 	return ((l_now - l_continueData["started"].toLongLong()) < dp::app::Config::instance()->showContinueBefore());
 }
 
+bool wasPlayed(const File& file) {
+	if (!wasStarted(file)) return false;
+	QVariantMap l_continueData = file.playbackData.isEmpty() ? QVariantMap() : file.playbackData.last().toMap();
+	uint played = file.mediaMeta["duration"].isValid() ? (100* l_continueData["position"].toUInt()) / file.mediaMeta["duration"].toUInt() : 50;
+	return played >= dp::app::Config::instance()->ignoreContinueAfter();
+}
+
+QString formatPlayed(qulonglong played) {
+	unsigned int l_hours = played / 3600;
+	unsigned int l_minutes = (played % 3600) / 60;
+	unsigned int l_seconds = played % 60;
+
+	QString l_result;
+	if (l_hours > 0) l_result += QString("%1:").arg(l_hours, 2, 10, QChar('0'));
+	l_result += QString("%1:%2").arg(l_minutes, 2, 10, QChar('0')).arg(l_seconds, 2, 10, QChar('0'));
+
+	return l_result;
+}
+
 QString playedList(const File& file) {
-	qDebug() << file.playbackData;
-	
-	//loop to make html string...
-	
-	return "";
+	if (file.playbackData.isEmpty()) return "";
+
+	QString l_played = QStringLiteral("<table cellpadding=\"4\" cellspacing=\"2\"><tr bgcolor=\"lightsteelblue\"><th>Date</th><th>Played</th></tr>");
+	for (auto& item : file.playbackData) {
+		QVariantMap l_item = item.toMap();
+		QString l_started = QDateTime::fromSecsSinceEpoch(l_item["started"].toLongLong(), QTimeZone::systemTimeZone()).toString(dp::app::Config::instance()->dateFormat() + " " + dp::app::Config::instance()->timeFormat());
+		l_played += QStringLiteral("<tr><td>") + l_started + QStringLiteral("</td><td>") + formatPlayed(l_item["position"].toULongLong()) + QStringLiteral("</td></tr>");
+	}
+	l_played += QStringLiteral("</table>");
+
+	return l_played;
 }
 
 QVariant dp::library::FileList::data(const QModelIndex &index, int role) const {
@@ -67,8 +102,17 @@ QVariant dp::library::FileList::data(const QModelIndex &index, int role) const {
 			case HasSubtitleRole:
 				l_result = l_file.hasSubtitleStream(dp::app::Config::instance()->language(dp::app::Config::LanguageCodes::ISO_639_2)) || l_file.tracks.contains("subtitleTrack");
 				break;
+			case WasStartedRole:
+				l_result = wasStarted(l_file);
+				break;
+			case StartedRecentlyRole:
+				l_result = wasStartedRecently(l_file);
+				break;
 			case WasPlayedRole:
 				l_result = wasPlayed(l_file);
+				break;
+			case PlayedListRole:
+				l_result = playedList(l_file);
 				break;
 			case SelectedRole:
 				l_result = l_file.id == m_selected;
@@ -78,7 +122,7 @@ QVariant dp::library::FileList::data(const QModelIndex &index, int role) const {
 	return l_result;
 }
 
-void dp::library::FileList::setFileList(const QVector<File>& files, unsigned long long playlistId) {
+void dp::library::FileList::setFileList(const QVector<File>& files, qulonglong playlistId) {
 	beginResetModel();
 	m_backing.clear();
 	m_paths.clear();

@@ -28,19 +28,19 @@ public:
 	int rowCount(const QModelIndex&) const override;
 	QVariant data(const QModelIndex &index, int role) const override;
 
-	Q_SLOT void selectPlaylist(unsigned long long id);
-	Q_SIGNAL void playlistSelected(unsigned long long id);
+	Q_SLOT void selectPlaylist(qulonglong id);
+	Q_SIGNAL void playlistSelected(qulonglong id);
 
-	unsigned long long getSelected();
+	qulonglong getSelected();
 	QString getLabel();
-	QVector<unsigned long long> getFiles();
+	QVector<qulonglong> getFiles();
 
 private:
 	static QPointer<Playlists> m_instance;
 	explicit Playlists(QObject *parent = nullptr);
 	static void init(QObject *parent = nullptr);
 
-	unsigned long long m_selected = 0;
+	qulonglong m_selected = 0;
 	QVector<Playlist> m_backing;
 
 	Q_SLOT void setPlaylists(const QVector<Playlist>& playlists);
