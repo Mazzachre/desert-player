@@ -94,18 +94,6 @@ void dp::player::MpvPlayer::handleFileError(const QString& reason) const {
 	Q_EMIT movieStopped();
 }
 
-void dp::player::MpvPlayer::playMovie(const QMap<QString, QVariant>& args) {
-	if (args.value("movie").isNull()) {
-		Q_EMIT error("No movie arg to play");
-		return;
-	}
-	m_movie = args;
-	QVariant result = m_mpvController->command(QVariant{QStringList{"loadfile", args.value("movie").toString()}});
-	if (result.canConvert<MpvErrorType>() && result.value<MpvErrorType>().isValid()) {
-		Q_EMIT error(result.value<MpvErrorType>().toString());
-	}
-}
-
 void dp::player::MpvPlayer::playFile(const File& file) {
 	m_movie = file.tracks;
 	m_movie["movie"] = file.path;
@@ -128,7 +116,7 @@ void dp::player::MpvPlayer::handleTracksLoaded() const {
 	changeVideoTrack(m_movie.value("videoTrack"));
 	changeAudioTrack(m_movie.value("audioTrack"));
 	if (m_movie.value("volume").isValid()) {
-		changeVolume(m_movie.value("volume"));
+		changeVolume(m_movie.value("volume").toUInt());
 	} else {
 		changeVolume(100);		
 	}
@@ -219,15 +207,19 @@ void dp::player::MpvPlayer::changeSubtitleTrack(const QVariant& subtitle) const 
 	}
 }
 
+QString findSubtitle(const QMap<uint, QString>& map, const QString& value) {
+	for (auto it = map.begin(); it != map.end(); ++it) {
+		if (it.value() == value) {
+			return QString::number(it.key());
+		}
+	}
+
+	return value;
+}
+
 void dp::player::MpvPlayer::removeSubtitleTrack(const QVariant& subtitle) const {
-	qDebug() << "Removing subtitle: " << subtitle;
-	
-	QVariant result = m_mpvController->command(QVariant{QStringList{"sub-remove", subtitle.toString()}});
+	QVariant result = m_mpvController->command(QVariant{QStringList{"sub-remove", findSubtitle(m_subtitle_files, subtitle.toString())}});
 	Q_EMIT subtitleTrackRemoved(m_subtitle_files[subtitle.toUInt()]);
-	
-	qDebug() << "Subtitle files: " << m_subtitle_files;
-	//TODO I think this index should be removed...
-	
 	if (result.canConvert<MpvErrorType>() && result.value<MpvErrorType>().isValid()) {
 		Q_EMIT error(result.value<MpvErrorType>().toString());
 	}

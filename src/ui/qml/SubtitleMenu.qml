@@ -10,7 +10,10 @@ Menu {
 
 	MenuItem {
 		text: "Add Subtitle File..."
-		onTriggered: selectSubtitle.open()
+		onTriggered: {
+			selectSubtitle.folder = Subtitle.directory
+			selectSubtitle.open()
+		}
 	}
 
 	MenuItem {
@@ -53,7 +56,7 @@ Menu {
 		id: selectSubtitle
 		modality: Qt.WindowModal
 		title: Subtitle.fileName
-		folder: Subtitle.directory;
+		folder: Subtitle.directory
 		selectExisting: true
 		selectMultiple: true
 		selectFolder: false

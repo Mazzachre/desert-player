@@ -94,16 +94,18 @@ Item {
 						id: editButton
 						width: 20
 						height: 20
-						enabled: id > 1
 						text: "\ue61d"
 						font {
 							family: icons.name
 							pointSize: 12
 						}
 						onClicked: {
-
-							//TODO We need a way to edit the effin names!
-
+							var buttonPosition = this.mapToItem(null, 0, 0);
+							renamePlaylist.x = buttonPosition.x;
+							renamePlaylist.y = buttonPosition.y;
+							renamePlaylist.id = id
+							renamePlaylist.title = label
+							renamePlaylist.open();
 						}
 						focusPolicy: Qt.NoFocus
 					}
@@ -221,7 +223,55 @@ Item {
 			indeterminate: PlaylistController.progress.indeterminate || false
 		}
 	}
-		
+
+	Popup {
+		id: renamePlaylist
+		parent: Overlay.overlay
+		width: 250
+		height: 100
+		modal: true
+		visible: false
+
+		property int id: 0
+		property string title: ""
+
+		Rectangle {
+			anchors.fill: parent
+			
+			TextField {
+				anchors.top: parent.top
+				anchors.horizontalCenter: parent.horizontalCenter
+				width: parent.width - 20
+				height: 30
+				text: renamePlaylist.title
+				onTextChanged: {
+					renamePlaylist.title = text
+				}
+			}
+
+			Row {
+				anchors.bottom: parent.bottom
+				width: parent.width
+				height: 30
+				spacing: 10
+
+				Button {
+					width: 108
+					text: 'Cancel'
+					onClicked: renamePlaylist.close()
+				}
+				Button {
+					width: 108
+					text: 'Save'
+					onClicked: {
+						PlaylistController.updateLabel(renamePlaylist.id, renamePlaylist.title)
+						renamePlaylist.close()
+					}
+				}
+			}
+		}
+	}
+
 	DropArea {
 		anchors.fill: parent
 		onEntered: drag.accept (Qt.LinkAction)

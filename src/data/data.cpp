@@ -171,7 +171,7 @@ void dp::data::Data::updatePlaylistName(qulonglong playlistId, const QString& la
 	l_query.bindValue(":label", label);
 	l_query.bindValue(":id", playlistId);
 	if(!l_query.exec()) Q_EMIT error(l_query.lastError().text());
-	else Q_EMIT fileListUpdated(getFileList(playlistId), playlistId);
+	else Q_EMIT playlistsUpdated(getPlaylists());
 }
 
 void dp::data::Data::removePlaylist(qulonglong id) {

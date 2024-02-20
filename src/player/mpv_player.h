@@ -44,7 +44,6 @@ public:
 
 	//SecondarySubtitle
 
-	Q_SLOT void playMovie(const QMap<QString, QVariant>& args);
 	Q_SLOT void playFile(const File& file);
 	Q_SLOT void stopMovie() const;
 

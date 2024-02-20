@@ -71,6 +71,7 @@ void dp::app::App::connectSignals() {
 	connect(dp::library::PlaylistController::instance(), &dp::library::PlaylistController::createPlaylist, dp::data::Data::instance(), &dp::data::Data::addPlaylist, Qt::QueuedConnection);
 	connect(dp::library::PlaylistController::instance(), &dp::library::PlaylistController::deletePlaylist, dp::data::Data::instance(), &dp::data::Data::removePlaylist, Qt::QueuedConnection);
 	connect(dp::library::PlaylistController::instance(), &dp::library::PlaylistController::updatePlaylistFiles, dp::data::Data::instance(), &dp::data::Data::updatePlaylistFiles, Qt::QueuedConnection);
+	connect(dp::library::PlaylistController::instance(), &dp::library::PlaylistController::updatePlaylistName, dp::data::Data::instance(), &dp::data::Data::updatePlaylistName, Qt::QueuedConnection);
 
 	//UI to player
 	connect(dp::ui::WindowController::instance(), &dp::ui::WindowController::playerTogglePause, player, &dp::player::MpvPlayer::togglePause);
