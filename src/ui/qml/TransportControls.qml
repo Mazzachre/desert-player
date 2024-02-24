@@ -26,7 +26,6 @@ Rectangle {
 	Column {
 		anchors.fill: parent
 
-		//setup better color comtrast
 		Slider {
 			id: position
 			from: 0
@@ -48,6 +47,25 @@ Rectangle {
 				onClicked: Video.positionChange(Math.round((positionMouseArea.mouseX/position.width)*Video.duration));
 			}
 
+			background: Rectangle {
+				id: positionSlider
+				x: position.leftPadding
+				y: position.topPadding + position.availableHeight / 2 - height / 2
+				implicitWidth: 200
+				implicitHeight: 4
+				width: position.availableWidth
+				height: implicitHeight
+				radius: 2
+				color: "#f0f0f0"
+
+				Rectangle {
+					width: position.visualPosition * parent.width
+					height: parent.height
+					color: "#000"
+					radius: 2
+				}
+			}
+
 			handle: Rectangle {
 				width: 8
 				height: 20
@@ -55,6 +73,18 @@ Rectangle {
 				y: position.topPadding + position.availableHeight / 2 - height / 2
 				color: "lightgrey"
 				radius: 5
+
+				MouseArea {
+					anchors.fill: parent
+					drag.target: parent
+					drag.axis: Drag.XAxis
+					drag.minimumX: positionSlider.x
+					drag.maximumX: positionSlider.width
+
+					onReleased: {
+						Video.positionChange(((parent.x-positionSlider.x) / position.width)*Video.duration)
+					}
+				}
 			}
 		}
 
@@ -173,7 +203,7 @@ Rectangle {
 					width: volume.availableWidth
 					height: implicitHeight
 					radius: 2
-					color: "#bdbebf"
+					color: "#000"
 
 					Rectangle {
 						width: volume.visualPosition * parent.width

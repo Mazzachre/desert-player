@@ -25,6 +25,7 @@ public:
 	Q_SLOT void appendFiles(const QVector<qulonglong>& files);
 	Q_SLOT void updateLabel(qulonglong id, const QString& label);
 	Q_SLOT void removePlaylist(qulonglong id);
+	Q_SLOT void moveFile(qulonglong id, int index);
 
 	QVariantMap getProgress();
 	Q_SIGNAL void progressChanged();

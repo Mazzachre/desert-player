@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.11
 import desert 1.0
 
 ListView {
+	id: fileList
 	flickableDirection: Flickable.VerticalFlick
 	boundsBehavior: Flickable.StopAtBounds
 	ScrollBar.vertical: ScrollBar {
@@ -26,32 +27,19 @@ ListView {
 			height: parent.height - 4
 			anchors.centerIn: parent
 
-			Button {
-				id: infoButton
-				width: 20
-				height: 20
-				text: "\uE718"
-				font {
-					family: icons.name
-					pointSize: 12
-				}
-				onClicked: FileList.showDetails(path);
-				focusPolicy: Qt.NoFocus
-			}
-
 			Text {
-				id: titleText
-				width: parent.width - 160
+				width: parent.width - 140
 				text: title
 				elide: Text.ElideRight
 				padding: 3
+
 				MouseArea {
 					height: parent.height
 					width: parent.width
 					onClicked: FileList.selectFile(path)
 					onDoubleClicked: {
-						FileList.selectFile(path);
-						FileList.startPlaying();
+						FileList.selectFile(path)
+						FileList.startPlaying()
 					}
 				}
 			}
@@ -85,7 +73,7 @@ ListView {
 
 			Text {
 				width: 20
-				text: hasSubtitle ? "\uF20A" : " "
+				text: hasSubtitle ? "\uE645" : " "
 				font {
 					family: icons.name
 					pointSize: 10

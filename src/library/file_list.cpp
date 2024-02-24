@@ -100,7 +100,7 @@ QVariant dp::library::FileList::data(const QModelIndex &index, int role) const {
 				l_result = l_file.mediaMeta.value("duration").isValid() ? QTime(0,0).addSecs(l_file.mediaMeta.value("duration").toUInt()).toString("H:mm:ss") : "??:??";
 				break;
 			case HasSubtitleRole:
-				l_result = l_file.hasSubtitleStream(dp::app::Config::instance()->language(dp::app::Config::LanguageCodes::ISO_639_2)) || l_file.tracks.contains("subtitleTrack");
+				l_result = (l_file.hasSubtitleStream(dp::app::Config::instance()->language(dp::app::Config::LanguageCodes::ISO_639_2)) || l_file.tracks.contains("subtitleTrack"));
 				break;
 			case WasStartedRole:
 				l_result = wasStarted(l_file);

@@ -80,3 +80,11 @@ void dp::library::PlaylistController::appendFiles(const QVector<qulonglong>& fil
 	l_list << files;
 	Q_EMIT updatePlaylistFiles(Playlists::instance()->getSelected(), l_list);
 }
+
+void dp::library::PlaylistController::moveFile(qulonglong id, int index) {
+	QVector<qulonglong> l_list(Playlists::instance()->getFiles());
+	int to = index < 0 ? l_list.size()-1 : index;
+	l_list.move(Playlists::instance()->getFiles().indexOf(id), to);
+	Q_EMIT updatePlaylistFiles(Playlists::instance()->getSelected(), l_list);
+}
+

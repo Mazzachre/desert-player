@@ -20,9 +20,6 @@ class FileList : public QAbstractListModel
 public:
 	static FileList* instance();
 
-	//was started (has any entries?)
-	//was played (is last entry played > ignoreContinueAfter)
-	//started recently (is last entry started < showContinueBefore)
 	enum PlaylistsRoles {
 		IdRole = Qt::UserRole + 1,
 		PathRole,
