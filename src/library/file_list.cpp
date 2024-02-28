@@ -1,4 +1,5 @@
 #include "file_list.h"
+#include <QUrl>
 #include <QTime>
 #include <QDateTime>
 #include <QTimeZone>
@@ -26,6 +27,8 @@ QHash<int, QByteArray> dp::library::FileList::roleNames() const {
 	roles[TitleRole] = "title";
 	roles[DurationRole] = "duration";
 	roles[HasSubtitleRole] = "hasSubtitle";
+	roles[HasIntSubtitleRole] = "internalSubtitle";
+	roles[SubtitleTrackRole] = "subtitleTrack";
 	roles[WasStartedRole] = "wasStarted";
 	roles[StartedRecentlyRole] = "startedRecently";
 	roles[WasPlayedRole] = "wasPlayed";
@@ -82,6 +85,25 @@ QString playedList(const File& file) {
 	return l_played;
 }
 
+QString subtitleTrack(const File& file) {
+	QString l_subtitle = QStringLiteral("");
+
+	if (file.tracks.contains("subtitleTrack")) {
+		if (file.tracks.value("subtitleTrack").type() == QVariant::String) {
+			l_subtitle = QStringLiteral("External ") + QUrl(file.tracks.value("subtitleTrack").toString()).fileName();
+		} else {
+			//TODO Can I figure out which one is which?
+			//They are just indexed...
+//			qDebug() << file.mediaMeta["streams"] << file.tracks.value("subtitleTrack");
+			l_subtitle = QStringLiteral("Internal");
+		}
+	} else if (file.hasSubtitleStream(dp::app::Config::instance()->language(dp::app::Config::LanguageCodes::ISO_639_2))) {
+		l_subtitle = QStringLiteral("Unselected internal ") + dp::app::Config::instance()->language(dp::app::Config::LanguageCodes::ISO_639);
+	}
+	
+	return l_subtitle;
+}
+
 QVariant dp::library::FileList::data(const QModelIndex &index, int role) const {
 	QVariant l_result;
 	if (index.isValid()) {
@@ -100,7 +122,13 @@ QVariant dp::library::FileList::data(const QModelIndex &index, int role) const {
 				l_result = l_file.mediaMeta.value("duration").isValid() ? QTime(0,0).addSecs(l_file.mediaMeta.value("duration").toUInt()).toString("H:mm:ss") : "??:??";
 				break;
 			case HasSubtitleRole:
-				l_result = (l_file.hasSubtitleStream(dp::app::Config::instance()->language(dp::app::Config::LanguageCodes::ISO_639_2)) || l_file.tracks.contains("subtitleTrack"));
+				l_result = l_file.tracks.contains("subtitleTrack");
+				break;
+			case HasIntSubtitleRole:
+				l_result = l_file.hasSubtitleStream(dp::app::Config::instance()->language(dp::app::Config::LanguageCodes::ISO_639_2));
+				break;
+			case SubtitleTrackRole:
+				l_result = subtitleTrack(l_file);
 				break;
 			case WasStartedRole:
 				l_result = wasStarted(l_file);

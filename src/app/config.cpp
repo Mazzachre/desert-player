@@ -45,6 +45,7 @@ uint dp::app::Config::cacheSize() const {
 
 QString dp::app::Config::language(LanguageCodes code) const {
 	switch(code) {
+		case LanguageCodes::ISO_639: return "English";
 		case LanguageCodes::ISO_639_2: return "eng";
 		case LanguageCodes::ISO_3166_1: return "en-US";
 		default: return "unknown";

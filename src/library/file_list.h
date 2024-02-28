@@ -26,6 +26,8 @@ public:
 		TitleRole,
 		DurationRole,
 		HasSubtitleRole,
+		HasIntSubtitleRole,
+		SubtitleTrackRole,
 		WasStartedRole,
 		StartedRecentlyRole,
 		WasPlayedRole,

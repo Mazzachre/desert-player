@@ -58,8 +58,10 @@ void dp::player::MpvPlayer::handlePropertyChange(const QString &property, const 
 	else if (property.compare("volume") == 0) Q_EMIT volumeChanged(value.isNull() ? 0 : value.toUInt());
 	else if (property.compare("vid") == 0) Q_EMIT videoTrackChanged(value);
 	else if (property.compare("aid") == 0) Q_EMIT audioTrackChanged(value);
-	else if (property.compare("sid") == 0) Q_EMIT subtitleTrackChanged(m_subtitle_files.value(value.toUInt(), value.toString()));
-	else if (property.compare("track-list") == 0) {
+	else if (property.compare("sid") == 0) {
+		if (m_subtitle_files.contains(value.toUInt())) Q_EMIT subtitleTrackChanged(m_subtitle_files.value(value.toUInt()));
+		Q_EMIT subtitleTrackChanged(value.toUInt());
+	} else if (property.compare("track-list") == 0) {
 		QList<QVariant> videoTracks;
 		QList<QVariant> audioTracks;
 		QList<QVariant> subtitleTracks;
@@ -115,10 +117,10 @@ void dp::player::MpvPlayer::handleTracksLoaded() const {
 	changeSubtitleTrack(m_movie.value("subtitleTrack"));
 	changeVideoTrack(m_movie.value("videoTrack"));
 	changeAudioTrack(m_movie.value("audioTrack"));
-	if (m_movie.value("volume").isValid()) {
+	if (m_movie.contains("volume")) {
 		changeVolume(m_movie.value("volume").toUInt());
 	} else {
-		changeVolume(100);		
+		changeVolume(100U);
 	}
 	QVariant result = m_mpvController->setProperty("pause", false);	
 	if (result.canConvert<MpvErrorType>() && result.value<MpvErrorType>().isValid()) {

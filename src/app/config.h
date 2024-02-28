@@ -14,6 +14,7 @@ public:
 	static Config* instance();
 
 	enum class LanguageCodes {
+		ISO_639,
 		ISO_639_2,
 		ISO_3166_1
 	};

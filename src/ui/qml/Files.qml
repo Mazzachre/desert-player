@@ -73,12 +73,29 @@ ListView {
 
 			Text {
 				width: 20
-				text: hasSubtitle ? "\uE645" : " "
+				text: (hasSubtitle || internalSubtitle) ? "\uE645" : " "
+				color: hasSubtitle ? "black" : "grey"
 				font {
 					family: icons.name
 					pointSize: 10
 				}
 				padding: 3
+
+				ToolTip {
+					visible: (hasSubtitle || internalSubtitle) ? subtitleTT.containsMouse : false
+					delay: 1000
+					contentItem: Text {
+						padding: 3
+						text: subtitleTrack
+						textFormat: Text.RichText
+					}
+				}
+
+				MouseArea {
+					id: subtitleTT
+					anchors.fill: parent
+					hoverEnabled: true
+				}
 			}
 
 			Text {
