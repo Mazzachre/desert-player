@@ -26,6 +26,7 @@ public:
 	Q_SLOT void updateLabel(qulonglong id, const QString& label);
 	Q_SLOT void removePlaylist(qulonglong id);
 	Q_SLOT void moveFile(qulonglong id, int index);
+	Q_SLOT void addExtras(qulonglong id, const QList<QUrl>& paths);
 
 	QVariantMap getProgress();
 	Q_SIGNAL void progressChanged();
@@ -35,6 +36,7 @@ private:
 	QThread* m_workerThread;
 	FilesWorker* m_worker;
 	QVariantMap m_progress;
+	qulonglong m_fileId;
 
 	explicit PlaylistController(QObject *parent = nullptr);
 	~PlaylistController();
@@ -44,7 +46,7 @@ private:
 	Q_SIGNAL void createPlaylist(const QString& label);
 	Q_SIGNAL void deletePlaylist(qulonglong id);
 	Q_SIGNAL void updatePlaylistName(qulonglong id, const QString& label);
-	Q_SIGNAL void addFilesToPlaylist(const QList<QUrl>& paths);
+	Q_SIGNAL void createFiles(const QList<QUrl>& paths);
 	Q_SLOT void handleError(const QString& error);
 	Q_SLOT void handleProgress(QVariant current, QVariant work);
 

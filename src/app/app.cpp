@@ -66,8 +66,11 @@ void dp::app::App::connectSignals() {
 
 	//Playlist to data
 	connect(dp::library::Playlists::instance(), &dp::library::Playlists::playlistSelected, dp::data::Data::instance(), &dp::data::Data::playlistSelected, Qt::QueuedConnection);
+	connect(dp::library::FileList::instance(), &dp::library::FileList::updateMediaMeta, dp::data::Data::instance(), &dp::data::Data::updateMetaData, Qt::QueuedConnection);
+	connect(dp::library::FileList::instance(), &dp::library::FileList::updateTracks, dp::data::Data::instance(), &dp::data::Data::updateTracks, Qt::QueuedConnection);
 	connect(dp::data::Data::instance(), &dp::data::Data::playlistsUpdated, dp::library::Playlists::instance(), &dp::library::Playlists::setPlaylists);
 	connect(dp::data::Data::instance(), &dp::data::Data::fileListUpdated, dp::library::FileList::instance(), &dp::library::FileList::setFileList);
+	connect(dp::data::Data::instance(), &dp::data::Data::fileUpdated, dp::library::FileList::instance(), &dp::library::FileList::fileUpdated);
 	connect(dp::library::PlaylistController::instance(), &dp::library::PlaylistController::createPlaylist, dp::data::Data::instance(), &dp::data::Data::addPlaylist, Qt::QueuedConnection);
 	connect(dp::library::PlaylistController::instance(), &dp::library::PlaylistController::deletePlaylist, dp::data::Data::instance(), &dp::data::Data::removePlaylist, Qt::QueuedConnection);
 	connect(dp::library::PlaylistController::instance(), &dp::library::PlaylistController::updatePlaylistFiles, dp::data::Data::instance(), &dp::data::Data::updatePlaylistFiles, Qt::QueuedConnection);
@@ -101,6 +104,7 @@ void dp::app::App::connectSignals() {
 
 	//Player to playback collecter
 	connect(player, &dp::player::MpvPlayer::subtitleTrackChanged, dp::library::Playback::instance(), &dp::library::Playback::subtitleTrackSelected);
+	connect(player, &dp::player::MpvPlayer::subtitleTrackRemoved, dp::library::Playback::instance(), &dp::library::Playback::subtitleTrackRemoved);
 	connect(player, &dp::player::MpvPlayer::audioTrackChanged, dp::library::Playback::instance(), &dp::library::Playback::audioTrackSelected);
 	connect(player, &dp::player::MpvPlayer::volumeChanged, dp::library::Playback::instance(), &dp::library::Playback::volumeChanged);
 	connect(player, &dp::player::MpvPlayer::videoTrackChanged, dp::library::Playback::instance(), &dp::library::Playback::videoTrackSelected);
@@ -119,8 +123,8 @@ void dp::app::App::connectSignals() {
 	connect(dp::library::FileList::instance(), &dp::library::FileList::playlistFinished, dp::ui::WindowController::instance(), &dp::ui::WindowController::stopPlaying);
 
 	//Playback to data connections
-	connect(dp::library::Playback::instance(), &dp::library::Playback::tracksUpdated, dp::data::Data::instance(), &dp::data::Data::updateTracks);
-	connect(dp::library::Playback::instance(), &dp::library::Playback::playbackFinished, dp::data::Data::instance(), &dp::data::Data::updatePlaybackData);
+	connect(dp::library::Playback::instance(), &dp::library::Playback::tracksUpdated, dp::data::Data::instance(), &dp::data::Data::updateTracks, Qt::QueuedConnection);
+	connect(dp::library::Playback::instance(), &dp::library::Playback::playbackFinished, dp::data::Data::instance(), &dp::data::Data::updatePlaybackData, Qt::QueuedConnection);
 
 	//handle errors - should be a display somewhere
 	connect(dp::data::Data::instance(), &dp::data::Data::error, this, &App::handleError);

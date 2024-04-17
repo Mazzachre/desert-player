@@ -29,8 +29,12 @@ public:
 	Q_SLOT void createFiles(const QList<File>& files);
 	Q_SIGNAL void filesCreated(const QList<File>& files);
 
-	Q_SLOT void updateTracks(const QString& path, const QVariantMap& tracks, qulonglong playlistId);
-	Q_SLOT void updatePlaybackData(const QString& path, const QVariantList& playbackData, qulonglong playlistId);
+	Q_SLOT void updateTracks(qulonglong fileId, const QVariantMap& tracks);
+	Q_SLOT void updatePlaybackData(qulonglong fileId, const QVariantList& playbackData);
+	Q_SLOT void updateMetaData(qulonglong fileId, const QVariantMap& metaData);
+	Q_SIGNAL void fileUpdated(const File& file);
+
+	//Update file with extras list...
 
 private:
 	static QPointer<Data> m_instance;
@@ -38,6 +42,8 @@ private:
 	~Data();
 	static void init(QObject* parent);
 	void startup();
+
+	QVariant getFile(qulonglong id);
 
 	QVariant getFile(const QString& path);
 	QVariant createFile(const File& file);

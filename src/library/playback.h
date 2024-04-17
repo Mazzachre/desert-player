@@ -22,8 +22,8 @@ public:
 	Q_SLOT void volumeChanged(uint volume);
 	Q_SLOT void positionChanged(qulonglong position);
 
-	Q_SIGNAL void tracksUpdated(const QString& path, const QVariantMap& tracks, uint playlistId);
-	Q_SIGNAL void playbackFinished(const QString& path, const QVariantList& playbackData, uint playlistId);
+	Q_SIGNAL void tracksUpdated(qulonglong fileId, const QVariantMap& tracks);
+	Q_SIGNAL void playbackFinished(qulonglong fileId, const QVariantList& playbackData);
 
 private:
 	static QPointer<Playback> m_instance;

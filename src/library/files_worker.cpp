@@ -17,7 +17,7 @@ QVariantMap mapMeta(AVDictionary* dict) {
 QVariantMap streamData(AVStream* stream, uint& duration) {
 	QVariantMap l_data;
 	//TODO I don't know what to put here!!! It should match the player so I can select?
-	l_data["id"] = stream->index;
+//	l_data["id"] = stream->index;
 	QVariantMap meta = mapMeta(stream->metadata);
 	
 	qDebug() << "Media meta data:" << meta;
@@ -58,9 +58,15 @@ QVariantMap dp::library::FilesWorker::getMediaMeta(const QString& path) {
 		QFileInfo l_fi(path);
 		l_result["title"] = meta.value("title", l_fi.fileName().chopped(4));
 		QList<QVariant> streams;
+		QMap<QString, int> streamIds = {{"video", 1}, {"audio", 1}, {"subtitle", 1}};
 		for (uint i = 0; i < m_formatCtx->nb_streams; ++i) {
 			QVariantMap stream = streamData(m_formatCtx->streams[i], duration);
-			if (!stream.isEmpty()) streams << stream;
+			if (!stream.isEmpty()) {
+				int id = streamIds[stream["type"].toString()];
+				stream["id"] = id;
+				streamIds[stream["type"].toString()] = id+1;
+				streams << stream;
+			}
 		}
 		l_result["streams"] = QVariant(streams);
 		if (m_formatCtx->duration > 0 ) {
@@ -196,7 +202,7 @@ void dp::library::FilesWorker::filesCreated(const QList<File>& files) {
 	for (auto& l_file : files) {
 		l_files << l_file.id;
 	}
-	Q_EMIT addToPlaylist(l_files);
+	Q_EMIT filesAdded(l_files);
 	
 	m_fileTypes.clear();
 	m_files.clear();

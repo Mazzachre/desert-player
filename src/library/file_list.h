@@ -41,7 +41,13 @@ public:
 
 	Q_SLOT void selectFile(const QString& path);
 	Q_SIGNAL void fileSelected(const QString& path);
-	
+
+	Q_SLOT void updateFileTitle(qulonglong id, const QString& title);
+	Q_SIGNAL void updateMediaMeta(qulonglong id, const QVariantMap& mediaMeta);
+
+	Q_SLOT void updateSubtitle(qulonglong id, const QString& path);
+	Q_SIGNAL void updateTracks(qulonglong id, const QVariantMap& tracks);
+
 	Q_SLOT void startPlaying();
 	Q_SLOT void playNext();
 	Q_SLOT void playPrev();
@@ -65,6 +71,7 @@ private:
 	qulonglong m_playlistId;
 
 	Q_SLOT void setFileList(const QVector<File>& files, qulonglong playlistId);
+	Q_SLOT void fileUpdated(const File& file);
 
 	friend class dp::app::App;	
 };

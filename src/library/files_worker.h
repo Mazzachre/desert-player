@@ -16,7 +16,7 @@ class FilesWorker : public QObject {
 public:
 	Q_SLOT void addFiles(const QList<QUrl>& paths);
 	Q_SIGNAL void progressUpdate(QVariant current, QVariant total);
-	Q_SIGNAL void addToPlaylist(const QVector<qulonglong>& files);
+	Q_SIGNAL void filesAdded(const QVector<qulonglong>& files);
 
 	Q_SIGNAL void error(const QString& error);
 

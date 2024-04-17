@@ -21,6 +21,7 @@ public:
 	enum PlaylistsRoles {
 		IdRole = Qt::UserRole + 1,
 		SelectedRole,
+		FileCountRole,
 		LabelRole
 	};
 

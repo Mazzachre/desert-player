@@ -92,13 +92,10 @@ QString subtitleTrack(const File& file) {
 		if (file.tracks.value("subtitleTrack").type() == QVariant::String) {
 			l_subtitle = QStringLiteral("External ") + QUrl(file.tracks.value("subtitleTrack").toString()).fileName();
 		} else {
-			//TODO Can I figure out which one is which?
-			//They are just indexed...
-//			qDebug() << file.mediaMeta["streams"] << file.tracks.value("subtitleTrack");
-			l_subtitle = QStringLiteral("Internal");
+			l_subtitle = QStringLiteral("Internal ") + file.getSubtitleLabel(file.tracks.value("subtitleTrack").toUInt());
 		}
-	} else if (file.hasSubtitleStream(dp::app::Config::instance()->language(dp::app::Config::LanguageCodes::ISO_639_2))) {
-		l_subtitle = QStringLiteral("Unselected internal ") + dp::app::Config::instance()->language(dp::app::Config::LanguageCodes::ISO_639);
+	} else if (file.hasInternalSubtitleStream()) {
+		l_subtitle = QStringLiteral("Unselected internal");
 	}
 	
 	return l_subtitle;
@@ -125,7 +122,7 @@ QVariant dp::library::FileList::data(const QModelIndex &index, int role) const {
 				l_result = l_file.tracks.contains("subtitleTrack");
 				break;
 			case HasIntSubtitleRole:
-				l_result = l_file.hasSubtitleStream(dp::app::Config::instance()->language(dp::app::Config::LanguageCodes::ISO_639_2));
+				l_result = l_file.hasInternalSubtitleStream();
 				break;
 			case SubtitleTrackRole:
 				l_result = subtitleTrack(l_file);
@@ -176,10 +173,28 @@ void dp::library::FileList::setFileList(const QVector<File>& files, qulonglong p
 }
 
 void dp::library::FileList::selectFile(const QString& path) {
-	beginResetModel();
+	auto l_prev = index(Playlists::instance()->getFiles().indexOf(m_selected), 0);
+	auto l_next = index(Playlists::instance()->getFiles().indexOf(m_paths[path]), 0);
+	
 	m_selected = m_paths[path];
 	Q_EMIT fileSelected(path);
-	endResetModel();
+	Q_EMIT dataChanged(l_prev, l_prev, {SelectedRole});
+	Q_EMIT dataChanged(l_next, l_next, {SelectedRole});
+}
+
+void dp::library::FileList::fileUpdated(const File& file) {
+	auto l_index = index(Playlists::instance()->getFiles().indexOf(file.id), 0);
+	m_backing[file.id] = file;
+	Q_EMIT dataChanged(l_index, l_index, {
+		TitleRole,
+		HasSubtitleRole,
+		HasIntSubtitleRole,
+		SubtitleTrackRole,
+		WasStartedRole,
+		StartedRecentlyRole,
+		WasPlayedRole,
+		PlayedListRole
+	});
 }
 
 void dp::library::FileList::startPlaying() {
@@ -216,4 +231,22 @@ bool dp::library::FileList::hasNext() {
 
 bool dp::library::FileList::getPlayable() {
 	return m_backing.size() > 0;
+}
+
+void dp::library::FileList::updateFileTitle(qulonglong id, const QString& title) {
+	File l_file = m_backing.value(id);
+	if (l_file.isValid()) {
+		QVariantMap l_mediaMeta = l_file.mediaMeta;
+		l_mediaMeta["title"] = title;
+		Q_EMIT updateMediaMeta(id, l_mediaMeta);
+	}
+}
+
+void dp::library::FileList::updateSubtitle(qulonglong id, const QString& path) {
+	File l_file = m_backing.value(id);
+	if (l_file.isValid()) {
+		QVariantMap l_tracks = l_file.tracks;
+		l_tracks["subtitleTrack"] = path;
+		Q_EMIT updateTracks(id, l_tracks);		
+	}
 }

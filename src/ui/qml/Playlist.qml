@@ -1,3 +1,4 @@
+import QtQuick.Window 2.3
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.11
@@ -100,18 +101,18 @@ Item {
 							pointSize: 12
 						}
 						onClicked: {
-							var buttonPosition = this.mapToItem(null, 0, 0);
-							renamePlaylist.x = buttonPosition.x;
-							renamePlaylist.y = buttonPosition.y;
+							var buttonPosition = this.mapToItem(null, 0, 0)
+							renamePlaylist.x = buttonPosition.x
+							renamePlaylist.y = Math.min(buttonPosition.y, Window.height-110)
 							renamePlaylist.id = id
 							renamePlaylist.title = label
-							renamePlaylist.open();
+							renamePlaylist.open()
 						}
 						focusPolicy: Qt.NoFocus
 					}
 
 					Text {
-						width: parent.width - 48
+						width: parent.width - 78
 						text: label
 						elide: Text.ElideRight
 						padding: 3
@@ -120,6 +121,13 @@ Item {
 							width: parent.width
 							onClicked: Playlists.selectPlaylist(id)
 						}
+					}
+					
+					Text {
+						width: 30
+						text: fileCount
+						padding: 3
+						horizontalAlignment: Text.AlignRight
 					}
 
 					Button {
@@ -131,7 +139,13 @@ Item {
 							family: icons.name
 							pointSize: 12
 						}
-						onClicked: PlaylistController.removePlaylist(id)
+						onClicked: {
+							var buttonPosition = this.mapToItem(null, 0, 0)
+							deletePlaylist.x = buttonPosition.x
+							deletePlaylist.y = Math.min(buttonPosition.y, Window.height-110)
+							deletePlaylist.id = id
+							deletePlaylist.open()
+						}
 						focusPolicy: Qt.NoFocus
 					}
 				}
@@ -179,7 +193,7 @@ Item {
 				}
 				onClicked: FileList.startPlaying()
 				focusPolicy: Qt.NoFocus
-			}		
+			}
 
 			Label {
 				text: Playlists.label
@@ -196,7 +210,6 @@ Item {
 			}
 		}
 
-
 		Files {
 			anchors {
 				top: fileListTools.bottom
@@ -204,6 +217,12 @@ Item {
 				left: parent.left
 				right: parent.right
 				margins: 5
+			}
+
+			DropArea {
+				anchors.fill: parent
+				onEntered: if (drag.hasUrls) drag.accept(Qt.LinkAction)
+				onDropped: if (drop.hasUrls) PlaylistController.addFiles(drop.urls)
 			}
 		}
 	}
@@ -241,6 +260,7 @@ Item {
 			TextField {
 				anchors.top: parent.top
 				anchors.horizontalCenter: parent.horizontalCenter
+				selectByMouse: true
 				width: parent.width - 20
 				height: 30
 				text: renamePlaylist.title
@@ -272,10 +292,47 @@ Item {
 		}
 	}
 
-	DropArea {
-		anchors.fill: parent
-		onEntered: drag.accept (Qt.LinkAction)
-		onDropped: PlaylistController.addFiles(drop.urls)
-	}
+	Popup {
+		id: deletePlaylist
+		parent: Overlay.overlay
+		width: 250
+		height: 100
+		modal: true
+		visible: false
 
+		property int id: 0
+
+		Rectangle {
+			anchors.fill: parent
+			
+			Text {
+				anchors.top: parent.top
+				anchors.horizontalCenter: parent.horizontalCenter
+				width: parent.width - 20
+				height: 30
+				text: "Delete playlist?"
+			}
+
+			Row {
+				anchors.bottom: parent.bottom
+				width: parent.width
+				height: 30
+				spacing: 10
+
+				Button {
+					width: 108
+					text: 'No'
+					onClicked: deletePlaylist.close()
+				}
+				Button {
+					width: 108
+					text: 'Delete'
+					onClicked: {
+						PlaylistController.removePlaylist(deletePlaylist.id)
+						deletePlaylist.close()
+					}
+				}
+			}
+		}
+	}
 }

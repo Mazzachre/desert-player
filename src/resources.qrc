@@ -4,6 +4,7 @@
         <file alias="Library.qml">ui/qml/Library.qml</file>
         <file alias="Playlist.qml">ui/qml/Playlist.qml</file>
         <file alias="Files.qml">ui/qml/Files.qml</file>
+        <file alias="FilesMenu.qml">ui/qml/FilesMenu.qml</file>
         <file alias="Player.qml">ui/qml/Player.qml</file>
         <file alias="ContinueControls.qml">ui/qml/ContinueControls.qml</file>
         <file alias="TransportControls.qml">ui/qml/TransportControls.qml</file>

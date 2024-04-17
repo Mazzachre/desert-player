@@ -60,7 +60,7 @@ void dp::player::MpvPlayer::handlePropertyChange(const QString &property, const 
 	else if (property.compare("aid") == 0) Q_EMIT audioTrackChanged(value);
 	else if (property.compare("sid") == 0) {
 		if (m_subtitle_files.contains(value.toUInt())) Q_EMIT subtitleTrackChanged(m_subtitle_files.value(value.toUInt()));
-		Q_EMIT subtitleTrackChanged(value.toUInt());
+		else Q_EMIT subtitleTrackChanged(value.toUInt());
 	} else if (property.compare("track-list") == 0) {
 		QList<QVariant> videoTracks;
 		QList<QVariant> audioTracks;
@@ -207,23 +207,32 @@ void dp::player::MpvPlayer::changeSubtitleTrack(const QVariant& subtitle) const 
 	if (result.canConvert<MpvErrorType>() && result.value<MpvErrorType>().isValid()) {
 		Q_EMIT error(result.value<MpvErrorType>().toString());
 	}
+	result = m_mpvController->command(QVariant{QStringList{"sub-visibility", "yes"}});
+	if (result.canConvert<MpvErrorType>() && result.value<MpvErrorType>().isValid()) {
+		Q_EMIT error(result.value<MpvErrorType>().toString());
+	}
 }
 
-QString findSubtitle(const QMap<uint, QString>& map, const QString& value) {
-	for (auto it = map.begin(); it != map.end(); ++it) {
+uint findSubtitleId(const QMap<uint, QString>& map, const QString& value) {
+	for (auto it = map.constBegin(); it != map.constEnd(); ++it) {
 		if (it.value() == value) {
-			return QString::number(it.key());
+			return it.key();
 		}
 	}
 
-	return value;
+	return 0;
 }
 
 void dp::player::MpvPlayer::removeSubtitleTrack(const QVariant& subtitle) const {
-	QVariant result = m_mpvController->command(QVariant{QStringList{"sub-remove", findSubtitle(m_subtitle_files, subtitle.toString())}});
-	Q_EMIT subtitleTrackRemoved(m_subtitle_files[subtitle.toUInt()]);
-	if (result.canConvert<MpvErrorType>() && result.value<MpvErrorType>().isValid()) {
-		Q_EMIT error(result.value<MpvErrorType>().toString());
+	uint id = findSubtitleId(m_subtitle_files, subtitle.toString());
+	if (id > 0) {
+		QVariant result = m_mpvController->command(QVariant{QStringList{"sub-remove", QString::number(id)}});
+		Q_EMIT subtitleTrackRemoved(m_subtitle_files[id]);
+		if (result.canConvert<MpvErrorType>() && result.value<MpvErrorType>().isValid()) {
+			Q_EMIT error(result.value<MpvErrorType>().toString());
+		}
+	} else {
+		Q_EMIT error("Cannot remove unknown subtitle " + subtitle.toString());
 	}
 }
 

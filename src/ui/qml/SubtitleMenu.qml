@@ -17,7 +17,7 @@ Menu {
 	}
 
 	MenuItem {
-		text: "Remove currently selected"
+		text: "Remove subtitle file"
 		enabled: Subtitle.external
 		onTriggered: Subtitle.removeSubtitle()
 	}
@@ -58,7 +58,7 @@ Menu {
 		title: Subtitle.fileName
 		folder: Subtitle.directory
 		selectExisting: true
-		selectMultiple: true
+		selectMultiple: false
 		selectFolder: false
 		nameFilters: [ "Subtitle files (*.srt)", "All files (*)" ]
 		selectedNameFilter: "Subtitle files (*.srt)"

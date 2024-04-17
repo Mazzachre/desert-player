@@ -233,20 +233,57 @@ void dp::data::Data::createFiles(const QList<File>& files) {
 	Q_EMIT filesCreated(l_result);	
 }
 
-void dp::data::Data::updateTracks(const QString& path, const QVariantMap& tracks, qulonglong playlistId) {
+QVariant dp::data::Data::getFile(qulonglong id) {
 	QSqlQuery l_query(m_db);
-	l_query.prepare("UPDATE files SET tracks = :tracks WHERE path = :path");
-	l_query.bindValue(":tracks", QJsonDocument::fromVariant(tracks).toJson(QJsonDocument::Compact));
-	l_query.bindValue(":path", path);
-	if(!l_query.exec()) Q_EMIT error(l_query.lastError().text());
-	else Q_EMIT fileListUpdated(getFileList(playlistId), playlistId);
+	l_query.prepare("SELECT rowid, path, media, tracks, playback FROM files WHERE rowid = :rowid");
+	l_query.bindValue(":rowid", id);
+	if (!l_query.exec()) {
+		Q_EMIT error(l_query.lastError().text());
+	} else if (l_query.next()) {
+		return QVariant::fromValue(fileFromQuery(l_query));
+	}
+	return QVariant();	
 }
 
-void dp::data::Data::updatePlaybackData(const QString& path, const QVariantList& playbackData, qulonglong playlistId) {
+
+void dp::data::Data::updateTracks(qulonglong fileId, const QVariantMap& tracks) {
 	QSqlQuery l_query(m_db);
-	l_query.prepare("UPDATE files SET playback = :playback WHERE path = :path");
-	l_query.bindValue(":playback", QJsonDocument::fromVariant(playbackData).toJson(QJsonDocument::Compact));
-	l_query.bindValue(":path", path);
+	l_query.prepare("UPDATE files SET tracks = :tracks WHERE rowid = :id");
+	l_query.bindValue(":tracks", QJsonDocument::fromVariant(tracks).toJson(QJsonDocument::Compact));
+	l_query.bindValue(":id", fileId);
 	if(!l_query.exec()) Q_EMIT error(l_query.lastError().text());
-	else Q_EMIT fileListUpdated(getFileList(playlistId), playlistId);
+	else {
+		QVariant l_file = getFile(fileId);
+		if (l_file.isValid()) {
+			Q_EMIT fileUpdated(l_file.value<File>());
+		}
+	}
+}
+
+void dp::data::Data::updatePlaybackData(qulonglong fileId, const QVariantList& playbackData) {
+	QSqlQuery l_query(m_db);
+	l_query.prepare("UPDATE files SET playback = :playback WHERE rowid = :id");
+	l_query.bindValue(":playback", QJsonDocument::fromVariant(playbackData).toJson(QJsonDocument::Compact));
+	l_query.bindValue(":id", fileId);
+	if(!l_query.exec()) Q_EMIT error(l_query.lastError().text());
+	else {
+		QVariant l_file = getFile(fileId);
+		if (l_file.isValid()) {
+			Q_EMIT fileUpdated(l_file.value<File>());
+		}
+	}	
+}
+
+void dp::data::Data::updateMetaData(qulonglong fileId, const QVariantMap& mediaMeta) {
+	QSqlQuery l_query(m_db);
+	l_query.prepare("UPDATE files SET media = :media WHERE rowid = :id");
+	l_query.bindValue(":media", QJsonDocument::fromVariant(mediaMeta).toJson(QJsonDocument::Compact));
+	l_query.bindValue(":id", fileId);
+	if(!l_query.exec()) Q_EMIT error(l_query.lastError().text());
+	else {
+		QVariant l_file = getFile(fileId);
+		if (l_file.isValid()) {
+			Q_EMIT fileUpdated(l_file.value<File>());
+		}
+	}
 }

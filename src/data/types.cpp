@@ -71,16 +71,27 @@ bool File::isValid() const {
 	return id > 0 && !path.isEmpty();
 }
 
-bool File::hasSubtitleStream(const QString& language) const {
+bool File::hasInternalSubtitleStream() const {
 	QList<QVariant> l_streams = mediaMeta.value("streams").toList();
 	for (auto& l_stream_entry : l_streams) {
 		QVariantMap l_stream = l_stream_entry.toMap();
-		if (l_stream.value("type") == QStringLiteral("subtitle")) {
-			if (l_stream.value("language") == language) return true;
-			if (l_stream.value("language") == QStringLiteral("unknown")) return true;
-		}
+		if (l_stream.value("type") == QStringLiteral("subtitle")) return true;		
 	}
 	return false;
+}
+
+QString File::getSubtitleLabel(uint id) const {
+	QList<QVariant> l_streams = mediaMeta.value("streams").toList();
+	for (auto& l_stream_entry : l_streams) {
+		QVariantMap l_stream = l_stream_entry.toMap();
+		if (l_stream.value("type") == QStringLiteral("subtitle") && l_stream.value("id") == id) {
+			if (l_stream.value("language").isValid() && l_stream.value("title").isValid()) return l_stream.value("language").toString() + " '" + l_stream.value("title").toString() + "'";
+			if (l_stream.value("language").isValid()) return l_stream.value("language").toString();
+			if (l_stream.value("title").isValid()) return l_stream.value("title").toString();
+			return "Unknown";
+		};
+	}
+	return "Unknown";
 }
 
 qulonglong File::getDurationPercentage(uint percentage) const {

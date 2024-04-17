@@ -21,6 +21,7 @@ QHash<int, QByteArray> dp::library::Playlists::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[IdRole] = "id";
     roles[SelectedRole] = "selected";
+    roles[FileCountRole] = "fileCount";
     roles[LabelRole] = "label";
     return roles;
 }
@@ -39,6 +40,9 @@ QVariant dp::library::Playlists::data(const QModelIndex &index, int role) const 
 			case SelectedRole:
 				l_result = m_backing[index.row()].id == m_selected;
 				break;
+			case FileCountRole:
+				l_result = m_backing[index.row()].files.length();
+				break;
 			case LabelRole:
 				l_result = m_backing[index.row()].label;
 				break;
@@ -48,6 +52,7 @@ QVariant dp::library::Playlists::data(const QModelIndex &index, int role) const 
 }
 
 void dp::library::Playlists::selectPlaylist(qulonglong id) {
+	//TODO This should only set the role data
     if (m_selected != id) {
 		beginResetModel();
 		m_selected = id;

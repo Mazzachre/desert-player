@@ -26,7 +26,8 @@ struct File {
 	File(const File& other);
 	File& operator=(const File& other);
 	bool isValid() const;
-	bool hasSubtitleStream(const QString& language) const;
+	bool hasInternalSubtitleStream() const;
+	QString getSubtitleLabel(uint id) const;
 	qulonglong getDurationPercentage(uint percentage) const;
 };
 Q_DECLARE_METATYPE(File);
