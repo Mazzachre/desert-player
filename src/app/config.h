@@ -21,6 +21,7 @@ public:
 
 	uint version() const;
 	bool debug() const;
+	QString logFile() const;
 	QString dataDir() const;
 	QString cacheDir() const;
 	uint cacheSize() const;

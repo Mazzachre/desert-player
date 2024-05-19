@@ -143,6 +143,7 @@ QVariant dp::library::FileList::data(const QModelIndex &index, int role) const {
 				l_result = l_file.id == m_selected;
 				break;
 		}
+		qDebug() << "File data: " << index.row() << " " << l_file.id << " " << role << " " << l_result;
 	}
 	return l_result;
 }

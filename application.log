@@ -1,0 +1,22 @@
+2024-05-18 10:18:28.293 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  idle
+2024-05-18 10:18:28.532 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_player.cpp:84, void dp::player::MpvPlayer::handlePropertyChange(const QString&, const QVariant&)) Unknown property change:  "time-pos"  -  QVariant(Invalid)
+2024-05-18 10:18:28.532 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_player.cpp:84, void dp::player::MpvPlayer::handlePropertyChange(const QString&, const QVariant&)) Unknown property change:  "duration"  -  QVariant(Invalid)
+2024-05-18 10:18:36.345 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  start-file
+2024-05-18 10:18:38.853 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  tracks-changed
+2024-05-18 10:18:38.853 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  tracks-changed
+2024-05-18 10:18:38.853 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  metadata-update
+2024-05-18 10:18:38.864 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  audio-reconfig
+2024-05-18 10:18:38.870 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  audio-reconfig
+2024-05-18 10:18:38.870 [DEBUG] (/home/tanya/projects/desert-player/src/app/app.cpp:208, void dp::app::App::handleError(const QString&)) Error! dp::player::MpvPlayer "invalid parameter"
+2024-05-18 10:18:39.133 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  audio-reconfig
+2024-05-18 10:18:39.133 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  video-reconfig
+2024-05-18 10:18:39.134 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  video-reconfig
+2024-05-18 10:18:39.157 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  playback-restart
+2024-05-18 10:18:45.681 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  audio-reconfig
+2024-05-18 10:18:45.682 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  video-reconfig
+2024-05-18 10:18:45.682 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_player.cpp:84, void dp::player::MpvPlayer::handlePropertyChange(const QString&, const QVariant&)) Unknown property change:  "time-pos"  -  QVariant(Invalid)
+2024-05-18 10:18:45.702 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  tracks-changed
+2024-05-18 10:18:45.703 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  audio-reconfig
+2024-05-18 10:18:45.708 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  video-reconfig
+2024-05-18 10:18:45.708 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_controller.cpp:263, void dp::player::MpvController::eventHandler()) Event default:  idle
+2024-05-18 10:18:45.708 [DEBUG] (/home/tanya/projects/desert-player/src/player/mpv_player.cpp:84, void dp::player::MpvPlayer::handlePropertyChange(const QString&, const QVariant&)) Unknown property change:  "duration"  -  QVariant(Invalid)

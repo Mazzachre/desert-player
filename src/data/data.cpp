@@ -138,6 +138,7 @@ QVector<Playlist> dp::data::Data::getPlaylists() {
 			l_playlists << Playlist(l_query.value("rowid").toUInt(), l_query.value("label").toString(), l_files);
 		}
 	}
+	qDebug() << "Get playlists: " << l_playlists;
 	return l_playlists;
 }
 
@@ -153,6 +154,7 @@ QVector<File> dp::data::Data::getFileList(qulonglong playlistId) {
 			l_fileList << fileFromQuery(l_query);
 		}
 	}
+	qDebug() << "Fetching file list for playlist " << playlistId << " " << l_fileList;
 	return l_fileList;
 }
 

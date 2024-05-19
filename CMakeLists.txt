@@ -26,6 +26,7 @@ target_sources(desert-player
 	src/main.cpp
 	src/app/app.cpp
 	src/app/config.cpp
+	src/app/logger.cpp
 	src/data/data.cpp
 	src/data/types.cpp
 	src/library/playlists.cpp

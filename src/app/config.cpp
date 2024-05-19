@@ -39,6 +39,10 @@ bool dp::app::Config::debug() const {
 	return true;
 }
 
+QString dp::app::Config::logFile() const {
+	return dataDir() + QStringLiteral("/desert-player.log");
+}
+
 uint dp::app::Config::cacheSize() const {
 	return m_values.value("cacheSize", 256 * 1024 * 1024).toULongLong();
 }

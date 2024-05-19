@@ -3,6 +3,7 @@
 #include <QDesktopWidget>
 #include <QCommandLineParser>
 #include "config.h"
+#include "logger.h"
 #include "../data/data.h"
 #include "../library/playlists.h"
 #include "../library/file_list.h"
@@ -25,8 +26,9 @@ dp::app::App::App(int &argc, char **argv)
 		{{"V", "Verbose"}, "Verbose terminal logging"}
 	});
 	parser.process(*this);
-
+	
 	Config::init(this);
+	Logger::init(this);
 	dp::data::Data::init(this);
 	dp::library::Playlists::init(this);
 	dp::library::FileList::init(this);
@@ -36,6 +38,8 @@ dp::app::App::App(int &argc, char **argv)
 	dp::player::VideoList::init(this);
 	dp::player::SubtitleList::init(this);
 	dp::ui::WindowController::init(this);
+
+	Logger::instance()->startLogging();
 
 	registerQmlTypes();
 	m_engine->load(QUrl(QStringLiteral("qrc:/main.qml")));

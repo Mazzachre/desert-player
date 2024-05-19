@@ -101,7 +101,7 @@ qulonglong File::getDurationPercentage(uint percentage) const {
 
 QDebug operator<<(QDebug dbg, const File& file) {
 	//TODO Perhaps this should be better?
-	dbg << "File:" << file.id << file.path << ":" << file.mediaMeta << file.tracks << file.playbackData;
+	dbg << "File: " << file.id << " " << file.path;
 	return dbg;
 }
 
@@ -114,7 +114,7 @@ Playlist::Playlist(unsigned long long _id, const QString& _label, const QVector<
 }
 
 QDebug operator<<(QDebug dbg, const Playlist& playlist) {
-	dbg << "Playlist:" << playlist.id << "\"" << playlist.label << "\"";
+	dbg << "Playlist: " << playlist.id << " " << playlist.label << " " << playlist.files;
 	return dbg;
 }
 

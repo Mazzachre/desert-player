@@ -41,17 +41,6 @@ Item {
 				selectSubtitle.open()
 			}
 		}
-
-//		MenuItem {
-//			text: "Add extras"
-//			onTriggered: {
-//				var lastIndex = filesMenu.filePath.lastIndexOf("/")
-//				selectExtras.folder = "file://"+filesMenu.filePath.substring(0, lastIndex + 1)
-//				selectExtras.open()
-//			}
-//		}
-
-//menu item, add subtitle file...
 	}
 
 	FileDialog {
