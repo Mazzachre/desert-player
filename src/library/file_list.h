@@ -48,6 +48,8 @@ public:
 	Q_SLOT void updateSubtitle(qulonglong id, const QString& path);
 	Q_SIGNAL void updateTracks(qulonglong id, const QVariantMap& tracks);
 
+	Q_SLOT void sort();
+
 	Q_SLOT void startPlaying();
 	Q_SLOT void playNext();
 	Q_SLOT void playPrev();
@@ -67,6 +69,8 @@ private:
 
 	QHash<qulonglong, File> m_backing;
 	QHash<QString, qulonglong> m_paths;
+	QVector<qulonglong> m_originalOrder;
+	QVector<qulonglong> m_orderedList;
 	qulonglong m_selected;
 	qulonglong m_playlistId;
 

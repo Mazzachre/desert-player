@@ -51,13 +51,22 @@ QVariant dp::library::Playlists::data(const QModelIndex &index, int role) const 
 	return l_result;
 }
 
+int findIndex(const QVector<Playlist>& list, qulonglong id) {
+	for(int i = 0; i < list.length(); ++i) {
+		auto item = list.at(i);
+		if (item.id == id) return i;
+	}
+	return -1;
+}
+
 void dp::library::Playlists::selectPlaylist(qulonglong id) {
-	//TODO This should only set the role data
+	auto l_prev = index(findIndex(m_backing, m_selected), 0);
+	auto l_next = index(findIndex(m_backing, id), 0);
     if (m_selected != id) {
-		beginResetModel();
 		m_selected = id;
 		Q_EMIT playlistSelected(id);
-		endResetModel();
+		Q_EMIT dataChanged(l_prev, l_prev, {SelectedRole});
+		Q_EMIT dataChanged(l_next, l_next, {SelectedRole});
 	}
 }
 

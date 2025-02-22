@@ -24,7 +24,7 @@ QVariantMap findQuery(const QString& fileName) {
 	QVariantMap l_episode = findSeasonAndEpisode(fileName);
 	QVariantMap l_year = findYear(fileName);
 
-	QString l_query = fileName.left(std::min(!l_episode.isEmpty() ? l_episode["start"].toInt() : fileName.length(), !l_year.isEmpty() ? l_year["start"].toInt() : fileName.length())).trimmed().split(QRegularExpression("\\W"), QString::SkipEmptyParts).join(" ");
+	QString l_query = fileName.left(std::min(!l_episode.isEmpty() ? l_episode["start"].toInt() : fileName.length(), !l_year.isEmpty() ? l_year["start"].toInt() : fileName.length())).trimmed().split(QRegularExpression("\\W"), Qt::SkipEmptyParts).join(" ");
 	QString l_type = (!l_episode.isEmpty()) ? "TV Show" : "Movie";
 
 	return QVariantMap({
@@ -100,9 +100,18 @@ qulonglong File::getDurationPercentage(uint percentage) const {
 }
 
 QDebug operator<<(QDebug dbg, const File& file) {
-	//TODO Perhaps this should be better?
 	dbg << "File: " << file.id << " " << file.path;
 	return dbg;
+}
+
+bool compareTitles(const File& fileA, const File& fileB) {
+	//TODO What we really want here is
+	//1) Replace non-alphanumeric with space
+	//2) Split into words based on spaces ignoring empty ones
+	//3) Ignore a & the in the beginning
+	//4) Compare each word until one is lower than the other... or either runs out. a.compare(b, Qt::CaseInsensitive);
+	//5) If ones is shorter, it is lower than the other...
+	return fileA.mediaMeta.value("title").toString() < fileB.mediaMeta.value("title").toString();
 }
 
 Playlist::Playlist() {}

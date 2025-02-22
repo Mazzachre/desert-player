@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QPointer>
-#include <QSqlDatabase>
 #include <QVariant>
 #include <QVector>
+#include <QThread>
 #include "types.h"
+#include "base.h"
 
 namespace dp {
 namespace app {class App;}
@@ -42,15 +43,30 @@ private:
 	~Data();
 	static void init(QObject* parent);
 	void startup();
+	Q_SIGNAL void doStartup();
 
-	QVariant getFile(qulonglong id);
+	Base* m_base{nullptr};
+	QThread* m_baseThread{nullptr};
 
-	QVariant getFile(const QString& path);
-	QVariant createFile(const File& file);
-	QVector<Playlist> getPlaylists();
-	QVector<File> getFileList(qulonglong playlistId);
+	Q_SIGNAL void doAddPlaylist(const QString& label);
+	Q_SIGNAL void doUpdatePlaylistName(qulonglong id, const QString& label);
+	Q_SIGNAL void doRemovePlaylist(qulonglong id);
+	Q_SIGNAL void doUpdatePlaylistFiles(qulonglong playlistId, QVector<qulonglong> files);
+	Q_SIGNAL void doPlaylistSelected(qulonglong id);
 
-	QSqlDatabase m_db;
+	Q_SIGNAL void doLoadFiles(const QList<QString>& paths);
+	Q_SIGNAL void doCreateFiles(const QList<File>& files);
+	Q_SIGNAL void doUpdateTracks(qulonglong fileId, const QVariantMap& tracks);
+	Q_SIGNAL void doUpdatePlaybackData(qulonglong fileId, const QVariantList& playbackData);
+	Q_SIGNAL void doUpdateMetaData(qulonglong fileId, const QVariantMap& metaData);
+
+	Q_SLOT void handlePlaylistsUpdated(const QVector<Playlist>& playlists);
+	Q_SLOT void handleFileListUpdated(const QVector<File>& files, qulonglong playlistId);	
+	Q_SLOT void handleFilesLoaded(const QList<File>& files);
+	Q_SLOT void handleFilesCreated(const QList<File>& files);
+	Q_SLOT void handleFileUpdated(const File& file);
+
+	Q_SLOT void handleError(const QString& error);
 	Q_SIGNAL void error(const QString& error);
 
 	friend class dp::app::App;

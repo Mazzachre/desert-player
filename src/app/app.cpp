@@ -1,5 +1,6 @@
 #include "app.h"
 
+#include <QScreen>
 #include <QDesktopWidget>
 #include <QCommandLineParser>
 #include "config.h"
@@ -44,10 +45,9 @@ dp::app::App::App(int &argc, char **argv)
 	registerQmlTypes();
 	m_engine->load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-	QDesktopWidget* desktopWidget = desktop();
 	QQuickWindow *window = qobject_cast<QQuickWindow*>(m_engine->rootObjects().first());
 	if (!window) qFatal("No root window found");
-	dp::ui::WindowController::instance()->init(window, desktopWidget->screenGeometry(desktopWidget->primaryScreen()));
+	dp::ui::WindowController::instance()->init(window, primaryScreen()->availableGeometry());
 }
 
 dp::app::App::~App() {

@@ -114,6 +114,8 @@ void dp::player::MpvPlayer::stopMovie() const {
 }
 
 void dp::player::MpvPlayer::handleTracksLoaded() const {
+	qDebug() << "Tracks loaded: " << m_movie;
+
 	changeSubtitleTrack(m_movie.value("subtitleTrack"));
 	changeVideoTrack(m_movie.value("videoTrack"));
 	changeAudioTrack(m_movie.value("audioTrack"));

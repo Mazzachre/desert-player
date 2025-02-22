@@ -63,7 +63,7 @@ void dp::app::Logger::customMessageHandler(QtMsgType type, const QMessageLogCont
                             .arg(msg);
 
     QTextStream out(&logger->m_logFile);
-    out << logMessage << ::endl;
+    out << logMessage << Qt::endl;
     if (type == QtFatalMsg) {
         abort();
     }

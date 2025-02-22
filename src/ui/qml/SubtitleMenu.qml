@@ -60,8 +60,8 @@ Menu {
 		selectExisting: true
 		selectMultiple: false
 		selectFolder: false
-		nameFilters: [ "Subtitle files (*.srt)", "All files (*)" ]
-		selectedNameFilter: "Subtitle files (*.srt)"
+		nameFilters: [ "Subtitle files (*.srt *.sub)", "All files (*)" ]
+		selectedNameFilter: "Subtitle files (*.srt *.sub)"
 		sidebarVisible: true
 		onAccepted: {
 			player.changeSubtitleTrack(fileUrl)

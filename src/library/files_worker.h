@@ -32,7 +32,6 @@ private:
 
 	void fileMimeType(const QFileInfo& file);
 	void walkDirectory(const QDir& dir);
-	QVariantMap getMediaMeta(const QString& path);
 
 	Q_SIGNAL void loadFiles(const QList<QString>& paths);
 	Q_SLOT void filesLoaded(const QList<File>& files);

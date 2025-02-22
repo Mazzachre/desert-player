@@ -75,7 +75,8 @@ QString playedList(const File& file) {
 	if (file.playbackData.isEmpty()) return "";
 
 	QString l_played = QStringLiteral("<table cellpadding=\"4\" cellspacing=\"2\"><tr bgcolor=\"lightsteelblue\"><th>Date</th><th>Played</th></tr>");
-	for (auto& item : file.playbackData) {
+	int start = file.playbackData.count() - 3;
+	for (auto& item : file.playbackData.mid(start < 0 ? 0 : start)) {
 		QVariantMap l_item = item.toMap();
 		QString l_started = QDateTime::fromSecsSinceEpoch(l_item["started"].toLongLong(), QTimeZone::systemTimeZone()).toString(dp::app::Config::instance()->dateFormat() + " " + dp::app::Config::instance()->timeFormat());
 		l_played += QStringLiteral("<tr><td>") + l_started + QStringLiteral("</td><td>") + formatPlayed(l_item["position"].toULongLong()) + QStringLiteral("</td></tr>");
@@ -104,7 +105,7 @@ QString subtitleTrack(const File& file) {
 QVariant dp::library::FileList::data(const QModelIndex &index, int role) const {
 	QVariant l_result;
 	if (index.isValid()) {
-		File l_file = m_backing[Playlists::instance()->getFiles()[index.row()]];
+		File l_file = m_backing[m_orderedList[index.row()]];
 		switch (role) {
 			case IdRole:
 				l_result = l_file.id;
@@ -152,6 +153,10 @@ void dp::library::FileList::setFileList(const QVector<File>& files, qulonglong p
 	beginResetModel();
 	m_backing.clear();
 	m_paths.clear();
+	m_orderedList.clear();
+
+	m_originalOrder = Playlists::instance()->getFiles();
+	m_orderedList = m_originalOrder;
 
 	for (const File& file : files) {
 		m_backing[file.id] = file;
@@ -163,9 +168,9 @@ void dp::library::FileList::setFileList(const QVector<File>& files, qulonglong p
 	} else {
 		if (playlistId != m_playlistId) {
 			m_playlistId = playlistId;
-			m_selected = Playlists::instance()->getFiles()[0];
+			m_selected = m_orderedList[0];
 		} else if(!m_backing.contains(m_selected)) {
-			m_selected = Playlists::instance()->getFiles()[0];			
+			m_selected = m_orderedList[0];			
 		}
 	}
 
@@ -174,8 +179,8 @@ void dp::library::FileList::setFileList(const QVector<File>& files, qulonglong p
 }
 
 void dp::library::FileList::selectFile(const QString& path) {
-	auto l_prev = index(Playlists::instance()->getFiles().indexOf(m_selected), 0);
-	auto l_next = index(Playlists::instance()->getFiles().indexOf(m_paths[path]), 0);
+	auto l_prev = index(m_orderedList.indexOf(m_selected), 0);
+	auto l_next = index(m_orderedList.indexOf(m_paths[path]), 0);
 	
 	m_selected = m_paths[path];
 	Q_EMIT fileSelected(path);
@@ -184,7 +189,7 @@ void dp::library::FileList::selectFile(const QString& path) {
 }
 
 void dp::library::FileList::fileUpdated(const File& file) {
-	auto l_index = index(Playlists::instance()->getFiles().indexOf(file.id), 0);
+	auto l_index = index(m_orderedList.indexOf(file.id), 0);
 	m_backing[file.id] = file;
 	Q_EMIT dataChanged(l_index, l_index, {
 		TitleRole,
@@ -206,8 +211,8 @@ void dp::library::FileList::startPlaying() {
 
 void dp::library::FileList::playPrev() {
 	if (hasPrev()) {
-		int l_index = Playlists::instance()->getFiles().indexOf(m_selected) - 1;
-		Q_EMIT playFile(m_backing[Playlists::instance()->getFiles()[l_index]]);
+		int l_index = m_orderedList.indexOf(m_selected) - 1;
+		Q_EMIT playFile(m_backing[m_orderedList[l_index]]);
 	} else {
 		Q_EMIT playlistFinished();
 	}
@@ -215,19 +220,19 @@ void dp::library::FileList::playPrev() {
 
 void dp::library::FileList::playNext() {
 	if (hasNext()) {
-		int l_index = Playlists::instance()->getFiles().indexOf(m_selected) + 1;
-		Q_EMIT playFile(m_backing[Playlists::instance()->getFiles()[l_index]]);
+		int l_index = m_orderedList.indexOf(m_selected) + 1;
+		Q_EMIT playFile(m_backing[m_orderedList[l_index]]);
 	} else {
 		Q_EMIT playlistFinished();
 	}
 }
 
 bool dp::library::FileList::hasPrev() {
-	return m_backing.size() != 0 && Playlists::instance()->getFiles().first() != m_selected;
+	return m_backing.size() != 0 && m_orderedList.first() != m_selected;
 }
 
 bool dp::library::FileList::hasNext() {
-	return m_backing.size() != 0 && Playlists::instance()->getFiles().last() != m_selected;
+	return m_backing.size() != 0 && m_orderedList.last() != m_selected;
 }
 
 bool dp::library::FileList::getPlayable() {
@@ -250,4 +255,18 @@ void dp::library::FileList::updateSubtitle(qulonglong id, const QString& path) {
 		l_tracks["subtitleTrack"] = path;
 		Q_EMIT updateTracks(id, l_tracks);		
 	}
+}
+
+void dp::library::FileList::sort() {
+	beginResetModel();
+
+	QList<File> l_files = m_backing.values();
+
+	std::sort(l_files.begin(), l_files.end(), compareTitles);
+	
+	for (int i = 0; i < l_files.length(); ++i) {
+		m_orderedList[i] = l_files[i].id;
+	}
+
+	endResetModel();
 }

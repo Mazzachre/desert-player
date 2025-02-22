@@ -33,6 +33,8 @@ struct File {
 Q_DECLARE_METATYPE(File);
 QDebug operator<<(QDebug dbg, const File& file);
 
+bool compareTitles(const File& fileA, const File& fileB);
+
 struct Playlist {
 	qulonglong id;
 	QString label;

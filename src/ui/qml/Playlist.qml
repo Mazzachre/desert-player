@@ -208,6 +208,24 @@ Item {
 					bold: true
 				}
 			}
+			
+			Button {
+				width: 34
+				height: 24
+				text: "\uE63F"
+				anchors {
+					top: parent.top
+					right: parent.right
+					topMargin: 3
+					rightMargin: 4
+				}
+				font {
+					family: icons.name
+					pointSize: 14
+				}
+				onClicked: FileList.sort()
+				focusPolicy: Qt.NoFocus
+			}
 		}
 
 		Files {

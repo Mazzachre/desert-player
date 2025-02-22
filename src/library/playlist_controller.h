@@ -19,12 +19,14 @@ class PlaylistController : public QObject
 public:
 	static PlaylistController* instance();
 
+	//New structure: Get files by path - Then filter by ID already in list - then add...
 	Q_SLOT void addFiles(const QList<QUrl>& paths);
 	Q_SLOT void addPlaylist();
 	Q_SLOT void removeFile(qulonglong id);
 	Q_SLOT void appendFiles(const QVector<qulonglong>& files);
 	Q_SLOT void updateLabel(qulonglong id, const QString& label);
 	Q_SLOT void removePlaylist(qulonglong id);
+	//Move file one up or one down... That way we can make it sortable...
 	Q_SLOT void moveFile(qulonglong id, int index);
 	Q_SLOT void addExtras(qulonglong id, const QList<QUrl>& paths);
 
