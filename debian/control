@@ -7,5 +7,5 @@ Standards-Version: 3.9.5
 
 Package: desert-player
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libqt5quick5 (>= 5.12.8), libqt5qml5 (>= 5.12.8), libqt5gui5 (>= 5.12.8), libqt5quickcontrols2-5 (>= 5.12.8), libqt5widgets5 (>= 5.12.8), libqt5sql5 (>= 5.12.8), libqt5network5 (>= 5.12.8), libqt5x11extras5 (>= 5.12.8), libx11-6, libmpv1, libavformat58, libavcodec58, libavutil56, qml-module-qtquick2, qml-module-qtquick-controls, qml-module-qtquick-controls2, qml-module-qtquick-layouts, qml-module-qtquick-window2, qml-module-qtquick-dialogs, qml-module-qt-labs-folderlistmodel, qml-module-qt-labs-settings
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqt5quick5 (>= 5.12.8), libqt5qml5 (>= 5.12.8), libqt5gui5 (>= 5.12.8), libqt5quickcontrols2-5 (>= 5.12.8), libqt5widgets5 (>= 5.12.8), libqt5sql5 (>= 5.12.8), libqt5network5 (>= 5.12.8), libqt5x11extras5 (>= 5.12.8), libx11-6, libmpv2, libavformat60, libavcodec60, libavutil58, qml-module-qtquick2, qml-module-qtquick-controls, qml-module-qtquick-controls2, qml-module-qtquick-layouts, qml-module-qtquick-window2, qml-module-qtquick-dialogs, qml-module-qt-labs-folderlistmodel, qml-module-qt-labs-settings
 Description: Media player for people who like their preferences saved.

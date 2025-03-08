@@ -68,7 +68,9 @@ void dp::library::PlaylistController::handleProgress(QVariant current, QVariant 
 		m_progress["show"] = true;
 		if (work.toUInt() == 0) m_progress["indeterminate"] = true;
 		else m_progress["indeterminate"] = false;
-	} else m_progress["show"] = false;
+	} else {
+		m_progress["show"] = false;
+	}
 	Q_EMIT progressChanged();
 }
 

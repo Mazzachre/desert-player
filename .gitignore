@@ -15,3 +15,5 @@ debian/desert-player.debhelper.log
 debian/desert-player.substvars
 debian/desert-player/
 obj-x86_64-linux-gnu/
+.kdev4
+desert-player.kdev4

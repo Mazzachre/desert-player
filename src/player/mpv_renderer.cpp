@@ -36,7 +36,7 @@ dp::player::MpvRenderer::MpvRenderer(MpvPlayer *player): m_player{player} {
 
 QOpenGLFramebufferObject* dp::player::MpvRenderer::createFramebufferObject(const QSize &size) {
 	if (!m_player->m_mpv_gl) {
-		mpv_opengl_init_params gl_init_params{get_proc_address_mpv, nullptr, nullptr};
+		mpv_opengl_init_params gl_init_params{get_proc_address_mpv, nullptr};
 
 		mpv_render_param display{MPV_RENDER_PARAM_INVALID, nullptr};
 		mpv_render_param params[]{

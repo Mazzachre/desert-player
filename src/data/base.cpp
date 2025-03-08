@@ -98,6 +98,7 @@ QVariant dp::data::Base::createFile(const File& file) {
 	l_query.bindValue(":media", QJsonDocument::fromVariant(file.mediaMeta).toJson(QJsonDocument::Compact));
 	l_query.bindValue(":tracks", QJsonDocument::fromVariant(file.tracks).toJson(QJsonDocument::Compact));
 	if(!l_query.exec()) {
+		qDebug() << "Error while inserting: " << file;
 		Q_EMIT error(l_query.lastError().text());
 	} else {
 		l_result.setValue(File(
