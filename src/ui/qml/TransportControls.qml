@@ -127,9 +127,13 @@ Rectangle {
 					anchors.verticalCenter: parent.verticalCenter
 					width: transportControls.height / 3
 					height: transportControls.height / 3
-					font.family: icons.name
-					font.pixelSize: transportControls.height / 4
-					text: "\uE723"
+
+					icon {
+						source: "icons/prev.svg"
+						width: transportControls.height / 4
+						height: transportControls.height / 4
+					}
+
 					onClicked: FileList.playPrev()
 					focusPolicy: Qt.NoFocus
 				}
@@ -138,9 +142,11 @@ Rectangle {
 					anchors.verticalCenter: parent.verticalCenter
 					width: transportControls.height / 3
 					height: transportControls.height / 3
-					font.family: icons.name
-					font.pixelSize: transportControls.height / 4
-					text: Video.paused ? "\uE6AD" : "\uE6AE"
+					icon {
+						source: Video.paused ? "icons/play.svg" : "icons/pause.svg"
+						width: transportControls.height / 4
+						height: transportControls.height / 4
+					}
 					onClicked: player.togglePause()
 					focusPolicy: Qt.NoFocus
 				}
@@ -149,9 +155,11 @@ Rectangle {
 					anchors.verticalCenter: parent.verticalCenter
 					width: transportControls.height / 3
 					height: transportControls.height / 3
-					font.family: icons.name
-					font.pixelSize: transportControls.height / 4
-					text: "\uE6AB"
+					icon {
+						source: "icons/stop.svg"
+						width: transportControls.height / 4
+						height: transportControls.height / 4
+					}
 					onClicked: player.stopMovie()
 					focusPolicy: Qt.NoFocus
 				}
@@ -161,9 +169,11 @@ Rectangle {
 					anchors.verticalCenter: parent.verticalCenter
 					width: transportControls.height / 3
 					height: transportControls.height / 3
-					font.family: icons.name
-					font.pixelSize: transportControls.height / 4
-					text: "\uE722"
+					icon {
+						source: "icons/next.svg"
+						width: transportControls.height / 4
+						height: transportControls.height / 4
+					}
 					onClicked: FileList.playNext()
 					focusPolicy: Qt.NoFocus
 				}
@@ -172,9 +182,11 @@ Rectangle {
 					anchors.verticalCenter: parent.verticalCenter
 					width: transportControls.height / 3
 					height: transportControls.height / 3
-					font.family: icons.name
-					font.pixelSize: transportControls.height / 4
-					text: WindowController.fullScreen ? "\uE6C9" : "\uE659"
+					icon {
+						source: WindowController.fullScreen ? "icons/normal.svg" : "icons/fullscreen.svg"
+						width: transportControls.height / 4
+						height: transportControls.height / 4
+					}
 					onClicked: WindowController.toggleFullScreen()
 					focusPolicy: Qt.NoFocus
 				}

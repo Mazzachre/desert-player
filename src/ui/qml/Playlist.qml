@@ -49,11 +49,10 @@ Item {
 					right: parent.right
 					rightMargin: 4
 				}
-				text: "\uE61A"
-				font {
-					family: icons.name
-					pointSize: 14
-					bold: true					
+				icon {
+					source: "icons/plus-circle.svg"
+					width: 16
+					height: 16
 				}
 				onClicked: PlaylistController.addPlaylist()
 				focusPolicy: Qt.NoFocus
@@ -95,10 +94,10 @@ Item {
 						id: editButton
 						width: 20
 						height: 20
-						text: "\ue61d"
-						font {
-							family: icons.name
-							pointSize: 12
+						icon {
+							source: "icons/pencil.svg"
+							width: 12
+							height: 12
 						}
 						onClicked: {
 							var buttonPosition = this.mapToItem(null, 0, 0)
@@ -134,10 +133,10 @@ Item {
 						width: 20
 						height: 20
 						enabled: id > 1
-						text: "\uE605"
-						font {
-							family: icons.name
-							pointSize: 12
+						icon {
+							source: "icons/trash.svg"
+							width: 12
+							height: 12
 						}
 						onClicked: {
 							var buttonPosition = this.mapToItem(null, 0, 0)
@@ -186,10 +185,10 @@ Item {
 					leftMargin: 4
 				}
 				enabled: FileList.playable
-				text: "\uE6AD"
-				font {
-					family: icons.name
-					pointSize: 14
+				icon {
+					source: "icons/play.svg"
+					width: 16
+					height: 16
 				}
 				onClicked: FileList.startPlaying()
 				focusPolicy: Qt.NoFocus
@@ -207,24 +206,6 @@ Item {
 					pointSize: 14
 					bold: true
 				}
-			}
-			
-			Button {
-				width: 34
-				height: 24
-				text: "\uE63F"
-				anchors {
-					top: parent.top
-					right: parent.right
-					topMargin: 3
-					rightMargin: 4
-				}
-				font {
-					family: icons.name
-					pointSize: 14
-				}
-				onClicked: FileList.sort()
-				focusPolicy: Qt.NoFocus
 			}
 		}
 

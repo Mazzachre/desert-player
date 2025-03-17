@@ -46,6 +46,7 @@ dp::app::App::App(int &argc, char **argv)
 	m_engine->load(QUrl(QStringLiteral("qrc:/main.qml")));
 
 	QQuickWindow *window = qobject_cast<QQuickWindow*>(m_engine->rootObjects().first());
+
 	if (!window) qFatal("No root window found");
 	dp::ui::WindowController::instance()->init(window, primaryScreen()->availableGeometry());
 }

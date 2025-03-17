@@ -12,7 +12,7 @@ include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 
-find_package(Qt5 ${QT_MIN_VERSION} REQUIRED NO_MODULE COMPONENTS Core Quick OpenGL Test Gui QuickControls2 Widgets Sql Concurrent Network X11Extras)
+find_package(Qt5 ${QT_MIN_VERSION} REQUIRED NO_MODULE COMPONENTS Core Quick OpenGL Svg Test Gui QuickControls2 Widgets Sql Concurrent Network X11Extras)
 find_package(X11 REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -57,6 +57,7 @@ target_link_libraries(desert-player
 	Qt5::Sql
 	Qt5::Network
 	Qt5::X11Extras
+	Qt5::Svg
 	X11
 	mpv
 	avformat

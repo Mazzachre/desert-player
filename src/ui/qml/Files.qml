@@ -118,10 +118,10 @@ Item {
 				Button {
 					width: 20
 					height: 20
-					text: "\uE605"
-					font {
-						family: icons.name
-						pointSize: 12
+					icon {
+						source: "icons/trash.svg"
+						width: 12
+						height: 12
 					}
 					onClicked: PlaylistController.removeFile(id)
 					focusPolicy: Qt.NoFocus
